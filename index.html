@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>毎月積立の複利計算ツール｜無料で簡単シミュレーション</title>
+  <meta name="description" content="毎月積立の複利を簡単に計算できます。元本・利率・期間を入力するだけで将来の資産額をシミュレーションできます。">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+<body style="font-family:sans-serif; max-width:600px; margin:auto; padding:20px;">
+
+<h1>毎月積立の複利計算ツール</h1>
+
+<p>
+毎月積立した場合の複利を簡単に計算できます。
+</p>
+
+<h2>計算ツール</h2>
+
+<label>毎月の積立額（円）</label><br>
+<input id="monthly" type="number"><br><br>
+
+<label>年利（%）</label><br>
+<input id="rate" type="number"><br><br>
+
+<label>年数</label><br>
+<input id="years" type="number"><br><br>
+
+<button onclick="calc()">計算する</button>
+
+<h3 id="result"></h3>
+
+<script>
+function calc() {
+  let m = Number(document.getElementById("monthly").value);
+  let r = Number(document.getElementById("rate").value) / 100 / 12;
+  let y = Number(document.getElementById("years").value) * 12;
+
+  let total = 0;
+  for (let i = 0; i < y; i++) {
+    total = (total + m) * (1 + r);
+  }
+
+  document.getElementById("result").innerText =
+    "最終金額：約 " + Math.round(total).toLocaleString() + " 円";
+}
+</script>
+
+<hr>
+
+<h2>使い方</h2>
+<p>
+毎月の積立額・年利・年数を入力して「計算する」を押してください。
+</p>
+
+<h2>計算例</h2>
+<p>
+毎月1万円、年利5%、20年間積立すると、約411万円になります。
+</p>
+
+<h2>よくある質問</h2>
+<p>
+Q. 税金は考慮されていますか？<br>
+A. このツールでは考慮していません。
+</p>
+
+</body>
+</html>
