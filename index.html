@@ -460,7 +460,7 @@
         if (value > scaleY) break;
         const yy = y(value);
         grid += `<line x1="${pad.left}" y1="${yy}" x2="${w - pad.right}" y2="${yy}" stroke="#888" stroke-dasharray="4 6" />`;
-        grid += `<text x="${pad.left - 8}" y="${yy + 4}" text-anchor="end" fill="#666" font-size="12">${(value / 10000).toLocaleString('ja-JP')}万</text>`;
+        grid += `<text x="${pad.left - 8}" y="${yy + 4}" text-anchor="end" fill="#666" font-size="12">${(value / 10000).toLocaleString('ja-JP')}</text>`;
       }
 
       const yearLabels = Math.min(10, Math.max(2, Math.floor(maxX / 12)));
@@ -468,8 +468,8 @@
       for (let i = 0; i <= yearLabels; i++) {
         const month = Math.round((maxX / yearLabels) * i);
         const xx = x(month);
-        xlabels += `<line x1="${xx}" y1="${pad.top}" x2="${xx}" y2="${h - pad.bottom}" stroke="rgba(0,0,0,.06)" />`;
-        xlabels += `<text x="${xx}" y="${h - 10}" text-anchor="middle" fill="#666" font-size="12">${(month / 12).toFixed(month % 12 === 0 ? 0 : 1)}年</text>`;
+        xlabels += `<line x1="${xx}" y1="${pad.top}" x2="${xx}" y2="${h - pad.bottom}" stroke="#888" />`;
+        xlabels += `<text x="${xx}" y="${h - 10}" text-anchor="middle" fill="#666" font-size="12">${(month / 12).toFixed(month % 12 === 0 ? 0 : 1)}年後</text>`;
       }
 
       // Tooltip overlay points (every 12 months)
