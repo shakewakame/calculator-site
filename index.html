@@ -109,7 +109,7 @@
       color: #dbe5ff;
     }
 
-    input, select {
+    input {
       width: 100%;
       border: 1px solid rgba(255,255,255,.10);
       outline: none;
@@ -121,7 +121,7 @@
       transition: .2s ease;
     }
 
-    input:focus, select:focus {
+    input:focus {
       border-color: var(--accent);
       box-shadow: 0 0 0 4px rgba(120,166,255,.14);
     }
@@ -146,21 +146,11 @@
       font-size: 15px;
       font-weight: 700;
       cursor: pointer;
-      transition: transform .12s ease, opacity .2s ease;
     }
 
-    button:hover { transform: translateY(-1px); }
-    button.primary { background: linear-gradient(135deg, var(--accent), #5b86ff); color: white; }
-    button.secondary { background: #20294b; color: var(--text); border: 1px solid rgba(255,255,255,.08); }
+    .right { display: grid; gap: 18px; }
 
-    .right {
-      display: grid;
-      gap: 18px;
-    }
-
-    .result-header {
-      padding: 20px 22px 10px;
-    }
+    .result-header { padding: 20px 22px 10px; }
 
     .stats {
       display: grid;
@@ -169,385 +159,64 @@
       padding: 0 22px 22px;
     }
 
-    .stat {
-      background: var(--soft);
-      border: 1px solid rgba(255,255,255,.06);
-      border-radius: 18px;
-      padding: 18px;
-      min-height: 126px;
-    }
+    .stat { padding: 18px; }
 
-    .stat .k {
-      color: var(--muted);
-      font-size: 13px;
-      margin-bottom: 10px;
-    }
-
-    .stat .v {
-      font-size: clamp(22px, 2vw, 34px);
-      font-weight: 800;
-      letter-spacing: -0.03em;
-      line-height: 1.15;
-      word-break: break-word;
-    }
-
-    .profit-positive { color: var(--accent-2); }
-    .profit-negative { color: var(--danger); }
-
-    .chart-card {
-      padding: 20px 22px 24px;
-    }
-
-    .chart-wrap {
-      background: linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.00));
-      border: 1px solid rgba(255,255,255,.06);
-      border-radius: 18px;
-      padding: 12px;
-      overflow: hidden;
-    }
-
-    svg {
-      width: 100%;
-      height: auto;
-      display: block;
-    }
-
-    .legend {
-      display: flex;
-      gap: 18px;
-      flex-wrap: wrap;
-      margin-top: 14px;
-      color: var(--muted);
-      font-size: 14px;
-    }
-
-    .legend span {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .dot {
-      width: 12px;
-      height: 12px;
-      border-radius: 999px;
-      display: inline-block;
-    }
-
-    .table-card {
-      padding: 20px 22px 22px;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 10px;
-      font-size: 14px;
-    }
-
-    th, td {
-      padding: 12px 10px;
-      border-bottom: 1px solid rgba(255,255,255,.07);
-      text-align: right;
-    }
-
-    th:first-child, td:first-child { text-align: left; }
-    th { color: #d7e3ff; font-weight: 700; }
-    td { color: #c3cbe2; }
-
-    .note {
-      margin-top: 18px;
-      padding: 14px 16px;
-      background: rgba(255,255,255,.03);
-      border: 1px solid rgba(255,255,255,.06);
-      border-radius: 14px;
-      color: var(--muted);
-      font-size: 13px;
-    }
-
-    .footer {
-      margin-top: 18px;
-      color: var(--muted);
-      font-size: 13px;
-      text-align: center;
-    }
-
-    @media (max-width: 980px) {
-      .grid { grid-template-columns: 1fr; }
-      .panel { position: static; }
-      .stats { grid-template-columns: repeat(2, 1fr); }
-    }
-
-    @media (max-width: 640px) {
-      .stats, .row-2 { grid-template-columns: 1fr; }
-      .wrap { padding-inline: 14px; }
-      .card { border-radius: 18px; }
-    }
   </style>
 </head>
+
 <body>
-  <div class="wrap">
-    <section class="hero">
-      <div class="badge">📈 積立投資シミュレーター</div>
-      <h1>毎月の積立で、<br>将来いくらになるかをすぐ試算</h1>
-      <p class="lead">毎月の積立額・想定年利・運用年数・初期投資額を入力すると、資産の推移、元本、運用益をその場で確認できます。</p>
-    </section>
+<div class="wrap">
 
-    <main class="grid">
-      <section class="card panel">
-        <h2>条件を入力</h2>
-        <p class="muted">年利を月利へ変換し、毎月積み立てる前提で試算します。</p>
+<label>
+  毎月の積立額（万円）
+  <input id="monthly" type="number" value="2">
+</label>
 
-        <div class="form-grid">
-          <label>
-            毎月の積立額（円）
-            <input id="monthly" type="number" min="0" step="1000" value="30000" />
-          </label>
+<label>
+  想定年利（%）
+  <input id="annualRate" type="number" value="7">
+</label>
 
-          <div class="row-2">
-            <label>
-              想定年利（%）
-              <input id="annualRate" type="number" min="0" step="0.1" value="5" />
-            </label>
-            <label>
-              運用年数（年）
-              <input id="years" type="number" min="1" step="1" value="20" />
-            </label>
-          </div>
+<label>
+  運用年数
+  <input id="years" type="number" value="20">
+</label>
 
-          <div class="row-2">
-            <label>
-              初期投資額（円）
-              <input id="initial" type="number" min="0" step="10000" value="0" />
-            </label>
-            <label>
-              積立タイミング
-              <select id="timing">
-                <option value="end">各月の月末に積立</option>
-                <option value="begin">各月の月初に積立</option>
-              </select>
-            </label>
-          </div>
+<label>
+  初期投資額（円）
+  <input id="initial" type="number" value="0">
+</label>
 
-          <div class="actions">
-            <button class="primary" id="calcBtn">計算する</button>
-            <button class="secondary" id="sampleBtn">サンプルを入れる</button>
-            <button class="secondary" id="resetBtn">リセット</button>
-          </div>
-        </div>
+<script>
+function simulate({ monthly, annualRate, years, initial }) {
+  const months = years * 12;
+  const monthlyRate = annualRate / 100 / 12;
 
-        <div class="note">
-          <strong>条件</strong><br>
-          ・税金、手数料、価格変動、為替影響は考慮していません。<br>
-          ・年利は月利へ変換して複利計算しています。<br>
-          ・教育用の簡易シミュレーターとして利用できます。
-        </div>
-      </section>
+  let balance = initial;
+  let principal = initial;
 
-      <section class="right">
-        <section class="card">
-          <div class="result-header">
-            <h2>シミュレーション結果</h2>
-            <p class="muted">入力変更後に「計算する」を押すか、自動再計算を有効にして使ってください。</p>
-          </div>
-          <div class="stats">
-            <div class="stat">
-              <div class="k">最終評価額</div>
-              <div class="v" id="finalValue">-</div>
-            </div>
-            <div class="stat">
-              <div class="k">積立元本</div>
-              <div class="v" id="principal">-</div>
-            </div>
-            <div class="stat">
-              <div class="k">運用益</div>
-              <div class="v profit-positive" id="profit">-</div>
-            </div>
-            <div class="stat">
-              <div class="k">利益率</div>
-              <div class="v" id="roi">-</div>
-            </div>
-          </div>
-        </section>
+  for (let i = 0; i < months; i++) {
+    balance *= (1 + monthlyRate);
+    balance += monthly;
+    principal += monthly;
+  }
 
-        <section class="card chart-card">
-          <h2>資産推移グラフ</h2>
-          <p class="muted">青が総資産、緑が元本です。</p>
-          <div class="chart-wrap">
-            <svg id="chart" viewBox="0 0 900 420" role="img" aria-label="資産推移グラフ"></svg>
-          </div>
-          <div class="legend">
-            <span><i class="dot" style="background:#78a6ff"></i> 総資産</span>
-            <span><i class="dot" style="background:#4ee1b5"></i> 元本</span>
-          </div>
-        </section>
+  return { balance, principal, profit: balance - principal };
+}
 
-        <section class="card table-card">
-          <h2>年次サマリー</h2>
-          <div class="muted">各年末時点の元本と評価額を表示します。</div>
-          <div style="overflow:auto; margin-top:8px;">
-            <table>
-              <thead>
-                <tr>
-                  <th>年</th>
-                  <th>年間積立額</th>
-                  <th>累計元本</th>
-                  <th>年末評価額</th>
-                  <th>累計運用益</th>
-                </tr>
-              </thead>
-              <tbody id="yearlyTable"></tbody>
-            </table>
-          </div>
-        </section>
-      </section>
-    </main>
+function calculate() {
+  const monthly = (Number(document.getElementById("monthly").value) || 0) * 10000;
+  const annualRate = Number(document.getElementById("annualRate").value) || 0;
+  const years = Number(document.getElementById("years").value) || 0;
+  const initial = Number(document.getElementById("initial").value) || 0;
 
-    <div class="footer">© 積立投資シミュレーター / HTML・CSS・JavaScript のみで動作</div>
-  </div>
+  const result = simulate({ monthly, annualRate, years, initial });
 
-  <script>
-    const el = (id) => document.getElementById(id);
-    const fmtYen = (n) => new Intl.NumberFormat('ja-JP', { style: 'currency', currency: 'JPY', maximumFractionDigits: 0 }).format(n);
-    const fmtPct = (n) => `${n.toFixed(1)}%`;
+  console.log(result);
+}
 
-    function simulate({ monthly, annualRate, years, initial, timing }) {
-      const months = Math.max(1, years * 12);
-      const monthlyRate = annualRate / 100 / 12;
-      let balance = initial;
-      let principal = initial;
-      const points = [{ month: 0, balance, principal }];
-      const yearly = [];
+calculate();
+</script>
 
-      for (let m = 1; m <= months; m++) {
-        if (timing === 'begin') {
-          balance += monthly;
-          principal += monthly;
-          balance *= (1 + monthlyRate);
-        } else {
-          balance *= (1 + monthlyRate);
-          balance += monthly;
-          principal += monthly;
-        }
-
-        points.push({ month: m, balance, principal });
-
-        if (m % 12 === 0) {
-          yearly.push({
-            year: m / 12,
-            annualContribution: monthly * 12,
-            principal,
-            balance,
-            profit: balance - principal
-          });
-        }
-      }
-
-      return { balance, principal, profit: balance - principal, roi: principal ? ((balance - principal) / principal) * 100 : 0, points, yearly };
-    }
-
-    function renderChart(points) {
-      const svg = el('chart');
-      const w = 900, h = 420;
-      const pad = { top: 20, right: 18, bottom: 40, left: 60 };
-      const innerW = w - pad.left - pad.right;
-      const innerH = h - pad.top - pad.bottom;
-      const maxY = Math.max(...points.map(p => Math.max(p.balance, p.principal)), 1);
-      const maxX = Math.max(...points.map(p => p.month), 1);
-      const x = (v) => pad.left + (v / maxX) * innerW;
-      const y = (v) => pad.top + innerH - (v / maxY) * innerH;
-
-      const linePath = (key) => points.map((p, i) => `${i === 0 ? 'M' : 'L'} ${x(p.month).toFixed(2)} ${y(p[key]).toFixed(2)}`).join(' ');
-
-      const ticks = 5;
-      let grid = '';
-      for (let i = 0; i <= ticks; i++) {
-        const value = maxY * (i / ticks);
-        const yy = y(value);
-        grid += `<line x1="${pad.left}" y1="${yy}" x2="${w - pad.right}" y2="${yy}" stroke="rgba(255,255,255,.08)" stroke-dasharray="4 6" />`;
-        grid += `<text x="${pad.left - 10}" y="${yy + 5}" text-anchor="end" fill="#93a3c7" font-size="12">${Math.round(value).toLocaleString('ja-JP')}</text>`;
-      }
-
-      const yearLabels = Math.min(10, Math.max(2, Math.floor(maxX / 12)));
-      let xlabels = '';
-      for (let i = 0; i <= yearLabels; i++) {
-        const month = Math.round((maxX / yearLabels) * i);
-        const xx = x(month);
-        xlabels += `<line x1="${xx}" y1="${pad.top}" x2="${xx}" y2="${h - pad.bottom}" stroke="rgba(255,255,255,.04)" />`;
-        xlabels += `<text x="${xx}" y="${h - 12}" text-anchor="middle" fill="#93a3c7" font-size="12">${(month / 12).toFixed(month % 12 === 0 ? 0 : 1)}年</text>`;
-      }
-
-      svg.innerHTML = `
-        <defs>
-          <linearGradient id="fillBlue" x1="0" x2="0" y1="0" y2="1">
-            <stop offset="0%" stop-color="rgba(120,166,255,.35)" />
-            <stop offset="100%" stop-color="rgba(120,166,255,0)" />
-          </linearGradient>
-        </defs>
-        <rect x="0" y="0" width="900" height="420" rx="16" fill="#10182d" />
-        ${grid}
-        ${xlabels}
-        <path d="${linePath('balance')} L ${x(maxX)} ${y(0)} L ${x(0)} ${y(0)} Z" fill="url(#fillBlue)" opacity="0.8"></path>
-        <path d="${linePath('principal')}" fill="none" stroke="#4ee1b5" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"></path>
-        <path d="${linePath('balance')}" fill="none" stroke="#78a6ff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"></path>
-      `;
-    }
-
-    function renderTable(yearly) {
-      const tbody = el('yearlyTable');
-      tbody.innerHTML = yearly.map(row => `
-        <tr>
-          <td>${row.year}年目</td>
-          <td>${fmtYen(row.annualContribution)}</td>
-          <td>${fmtYen(row.principal)}</td>
-          <td>${fmtYen(row.balance)}</td>
-          <td style="color:${row.profit >= 0 ? '#4ee1b5' : '#ff8b8b'}">${fmtYen(row.profit)}</td>
-        </tr>
-      `).join('');
-    }
-
-    function calculate() {
-      const monthly = Number(el('monthly').value) || 0;
-      const annualRate = Number(el('annualRate').value) || 0;
-      const years = Number(el('years').value) || 0;
-      const initial = Number(el('initial').value) || 0;
-      const timing = el('timing').value;
-
-      const result = simulate({ monthly, annualRate, years, initial, timing });
-
-      el('finalValue').textContent = fmtYen(result.balance);
-      el('principal').textContent = fmtYen(result.principal);
-      el('profit').textContent = fmtYen(result.profit);
-      el('profit').className = `v ${result.profit >= 0 ? 'profit-positive' : 'profit-negative'}`;
-      el('roi').textContent = fmtPct(result.roi);
-      renderChart(result.points);
-      renderTable(result.yearly);
-    }
-
-    function fillSample() {
-      el('monthly').value = 50000;
-      el('annualRate').value = 6;
-      el('years').value = 25;
-      el('initial').value = 300000;
-      el('timing').value = 'begin';
-      calculate();
-    }
-
-    function resetForm() {
-      el('monthly').value = 30000;
-      el('annualRate').value = 5;
-      el('years').value = 20;
-      el('initial').value = 0;
-      el('timing').value = 'end';
-      calculate();
-    }
-
-    el('calcBtn').addEventListener('click', calculate);
-    el('sampleBtn').addEventListener('click', fillSample);
-    el('resetBtn').addEventListener('click', resetForm);
-    ['monthly', 'annualRate', 'years', 'initial', 'timing'].forEach(id => el(id).addEventListener('input', calculate));
-
-    calculate();
-  </script>
 </body>
 </html>
