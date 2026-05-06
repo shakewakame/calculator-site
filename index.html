@@ -460,7 +460,7 @@
         const value = unit * i;
         if (value > scaleY) break;
         const yy = y(value);
-        grid += `<line x1="${pad.left}" y1="${yy}" x2="${w - pad.right}" y2="${yy}" stroke="rgba(0,0,0,.10)" stroke-dasharray="4 6" />`;
+        grid += `<line x1="${pad.left}" y1="${yy}" x2="${w - pad.right}" y2="${yy}" stroke="#888" stroke-dasharray="4 6" />`;
         grid += `<text x="${pad.left - 8}" y="${yy + 4}" text-anchor="end" fill="#666" font-size="12">${(value / 10000).toLocaleString('ja-JP')}万</text>`;
       }
 
@@ -491,6 +491,9 @@
       });
 
       svg.innerHTML = `
+      <text x="${pad.left}" y="${pad.top - 6}" fill="#aaa" font-size="12">
+      万円
+      </text>
         <defs>
           <linearGradient id="fillBlue" x1="0" x2="0" y1="0" y2="1">
             <stop offset="0%" stop-color="rgba(120,166,255,.25)" />
