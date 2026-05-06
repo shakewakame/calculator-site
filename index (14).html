@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>積立投資シミュレーター|毎月積み立て結果を簡単計算・無料ツール</title>
+  <meta name="description" content="毎月の積立額・年利・運用年数から将来の資産額をシミュレーション。複利効果をグラフで分かりやすく確認できます。無料で使える積立投資計算ツール。">
+  <style>
+    :root {
+      --bg: #0b1020;
+      --card: #131a2f;
+      --soft: #1b2442;
+      --line: #2e3a68;
+      --text: #eef3ff;
+      --muted: #a9b4d0;
+      --accent: #78a6ff;
+      --accent-2: #4ee1b5;
+      --danger: #ff8b8b;
+      --shadow: 0 18px 60px rgba(0,0,0,.28);
+      --radius: 20px;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Inter", "Hiragino Sans", "Noto Sans JP", sans-serif;
+      background: radial-gradient(circle at top, #162042 0%, var(--bg) 40%, #070b16 100%);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    .wrap {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 28px 20px 60px;
+    }
+
+    .hero {
+      display: grid;
+      gap: 14px;
+      margin-bottom: 24px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      width: fit-content;
+      background: rgba(120,166,255,.14);
+      color: #cfe0ff;
+      border: 1px solid rgba(120,166,255,.25);
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-size: 13px;
+      letter-spacing: .03em;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(30px, 4vw, 52px);
+      line-height: 1.15;
+      letter-spacing: -0.03em;
+    }
+
+    .lead {
+      margin: 0;
+      color: var(--muted);
+      max-width: 880px;
+      font-size: 16px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 380px 1fr;
+      gap: 20px;
+      align-items: start;
+    }
+
+    .card {
+      background: linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.00)), var(--card);
+      border: 1px solid rgba(255,255,255,.06);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .panel {
+      padding: 20px;
+      position: sticky;
+      top: 18px;
+    }
+
+    .panel h2, .result-header h2 {
+      margin: 0 0 8px;
+      font-size: 20px;
+    }
+
+    .muted { color: var(--muted); }
+
+    .form-grid {
+      display: grid;
+      gap: 14px;
+      margin-top: 18px;
+    }
+
+    label {
+      display: grid;
+      gap: 8px;
+      font-size: 14px;
+      color: #dbe5ff;
+    }
+
+    input, select {
+      width: 100%;
+      border: 1px solid rgba(255,255,255,.10);
+      outline: none;
+      background: #0e1528;
+      color: #888ea8;
+      border-radius: 14px;
+      padding: 14px 14px;
+      font-size: 15px;
+      transition: .2s ease;
+    }
+
+    input.user-edited, select.user-edited {
+      color: var(--text);
+    }
+
+    input:focus, select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 4px rgba(120,166,255,.14);
+    }
+
+    .row-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 6px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    button {
+      border: none;
+      border-radius: 14px;
+      padding: 14px 18px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform .12s ease, opacity .2s ease;
+    }
+
+    button:hover { transform: translateY(-1px); }
+    button.primary { background: linear-gradient(135deg, var(--accent), #5b86ff); color: white; }
+    button.secondary { background: #20294b; color: var(--text); border: 1px solid rgba(255,255,255,.08); }
+
+    /* Auto-calc checkbox */
+    .auto-calc-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: var(--muted);
+      cursor: pointer;
+      user-select: none;
+      margin-top: 2px;
+    }
+    .auto-calc-wrap input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      padding: 0;
+      border-radius: 4px;
+      accent-color: var(--accent);
+      cursor: pointer;
+    }
+
+    .right {
+      display: grid;
+      gap: 18px;
+    }
+
+    .result-header {
+      padding: 20px 22px 10px;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      padding: 0 22px 22px;
+    }
+
+    .stat {
+      background: var(--soft);
+      border: 1px solid rgba(255,255,255,.06);
+      border-radius: 18px;
+      padding: 18px;
+      min-height: 126px;
+    }
+
+    .stat .k {
+      color: var(--muted);
+      font-size: 13px;
+      margin-bottom: 10px;
+    }
+
+    .stat .v {
+      font-size: clamp(22px, 2vw, 34px);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.15;
+      word-break: break-word;
+    }
+
+    .profit-positive { color: var(--accent-2); }
+    .profit-negative { color: var(--danger); }
+
+    .chart-card {
+      padding: 20px 22px 24px;
+    }
+
+    .chart-wrap {
+      background: linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.00));
+      border: 1px solid rgba(255,255,255,.06);
+      border-radius: 18px;
+      padding: 12px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    svg {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    .legend {
+      display: flex;
+      gap: 18px;
+      flex-wrap: wrap;
+      margin-top: 14px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .legend span {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 999px;
+      display: inline-block;
+    }
+
+    .table-card {
+      padding: 20px 22px 22px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+      font-size: 14px;
+    }
+
+    th, td {
+      padding: 12px 10px;
+      border-bottom: 1px solid rgba(255,255,255,.07);
+      text-align: right;
+    }
+
+    th:first-child, td:first-child { text-align: left; }
+    th { color: #d7e3ff; font-weight: 700; }
+    td { color: #c3cbe2; }
+
+    .note {
+      margin-top: 18px;
+      padding: 14px 16px;
+      background: rgba(255,255,255,.03);
+      border: 1px solid rgba(255,255,255,.06);
+      border-radius: 14px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .footer {
+      margin-top: 18px;
+      color: var(--muted);
+      font-size: 13px;
+      text-align: center;
+    }
+
+    /* Custom tooltip */
+    #chartTooltip {
+      position: fixed;
+      background: #1b2442;
+      border: 1px solid rgba(120,166,255,.35);
+      border-radius: 12px;
+      padding: 12px 16px;
+      font-size: 13px;
+      color: var(--text);
+      pointer-events: none;
+      z-index: 9999;
+      display: none;
+      min-width: 200px;
+      box-shadow: 0 8px 32px rgba(0,0,0,.4);
+      line-height: 1.8;
+    }
+    #chartTooltip .tt-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    #chartTooltip .tt-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    @media (max-width: 980px) {
+      .grid { grid-template-columns: 1fr; }
+      .panel { position: static; }
+      .stats { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 640px) {
+      .stats, .row-2 { grid-template-columns: 1fr; }
+      .wrap { padding-inline: 14px; }
+      .card { border-radius: 18px; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Custom tooltip element -->
+  <div id="chartTooltip"></div>
+
+  <div class="wrap">
+    <section class="hero">
+      <div class="badge">📈 積立投資シミュレーター</div>
+      <h1>毎月の積立で、<br>将来いくらになるかをすぐ計算</h1>
+      <p class="lead">毎月の積立額・想定年利・運用年数・初期投資額を入力すると、資産の推移、元本、運用益をその場で確認できます。</p>
+    </section>
+
+    <main class="grid">
+      <section class="card panel">
+        <h2>条件を入力</h2>
+
+        <div class="form-grid">
+          <label>
+            毎月の積立額（万円）
+            <input id="monthly" type="number" min="0" step="0.1" value="2" />
+          </label>
+
+          <div class="row-2">
+            <label>
+              想定年利（%）
+              <input id="annualRate" type="number" min="0" step="0.1" value="7" />
+            </label>
+            <label>
+              運用年数（年）
+              <input id="years" type="number" min="1" step="1" value="20" />
+            </label>
+          </div>
+
+          <label>
+            初期投資額（万円）
+            <input id="initial" type="number" min="0" step="1" value="0" />
+          </label>
+
+          <div class="actions">
+            <button class="primary" id="calcBtn">計算する</button>
+            <button class="secondary" id="sampleBtn">初期値に戻す</button>
+          </div>
+          <label class="auto-calc-wrap">
+            <input type="checkbox" id="autoCalc" />
+            入力と同時に自動で再計算する
+          </label>
+        </div>
+
+        <div class="note">
+          <strong>条件</strong><br>
+          ・税金、手数料、価格変動、為替影響は考慮していません。<br>
+          ・年利は月利へ変換して複利計算しています。<br>
+          ・教育用の簡易シミュレーターとして利用できます。
+        </div>
+      </section>
+
+      <section class="right">
+        <section class="card">
+          <div class="result-header">
+            <h2>シミュレーション結果</h2>
+          </div>
+          <div class="stats">
+            <div class="stat">
+              <div class="k">予想評価額</div>
+              <div class="v" id="finalValue">-</div>
+            </div>
+            <div class="stat">
+              <div class="k">積立元本</div>
+              <div class="v" id="principal">-</div>
+            </div>
+            <div class="stat">
+              <div class="k">運用益</div>
+              <div class="v profit-positive" id="profit">-</div>
+            </div>
+            <div class="stat">
+              <div class="k">利益率</div>
+              <div class="v" id="roi">-</div>
+            </div>
+          </div>
+        </section>
+
+        <section class="card chart-card">
+          <h2>資産推移グラフ</h2>
+          <p class="muted">青が総資産、緑が元本です。</p>
+          <div class="chart-wrap">
+            <svg id="chart" viewBox="0 0 900 420" role="img" aria-label="資産推移グラフ"></svg>
+          </div>
+          <div class="legend">
+            <span><i class="dot" style="background:#78a6ff"></i> 総資産</span>
+            <span><i class="dot" style="background:#4ee1b5"></i> 元本</span>
+          </div>
+        </section>
+
+        <section class="card table-card">
+          <h2>年次サマリー</h2>
+          <div class="muted">元本と予想評価額を表示します。</div>
+          <div style="overflow:auto; margin-top:8px;">
+            <table>
+              <thead>
+                <tr>
+                  <th>年</th>
+                  <th>年間積立額</th>
+                  <th>累計元本</th>
+                  <th>予想評価額</th>
+                  <th>累計運用益</th>
+                </tr>
+              </thead>
+              <tbody id="yearlyTable"></tbody>
+            </table>
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <div class="footer">© 積立投資シミュレーター / HTML・CSS・JavaScript のみで動作</div>
+  </div>
+
+  <script>
+    const el = (id) => document.getElementById(id);
+    const fmtYen = (n) => new Intl.NumberFormat('ja-JP', { style: 'currency', currency: 'JPY', maximumFractionDigits: 0 }).format(n);
+    const fmtPct = (n) => `${n.toFixed(1)}%`;
+
+    function simulate({ monthly, annualRate, years, initial, timing }) {
+      const months = Math.max(1, years * 12);
+      const monthlyRate = annualRate / 100 / 12;
+      let balance = initial;
+      let principal = initial;
+      const points = [{ month: 0, balance, principal }];
+      const yearly = [];
+
+      for (let m = 1; m <= months; m++) {
+        if (timing === 'begin') {
+          balance += monthly;
+          principal += monthly;
+          balance *= (1 + monthlyRate);
+        } else {
+          balance *= (1 + monthlyRate);
+          balance += monthly;
+          principal += monthly;
+        }
+
+        points.push({ month: m, balance, principal });
+
+        if (m % 12 === 0) {
+          yearly.push({
+            year: m / 12,
+            annualContribution: monthly * 12,
+            principal,
+            balance,
+            profit: balance - principal
+          });
+        }
+      }
+
+      return { balance, principal, profit: balance - principal, roi: principal ? ((balance - principal) / principal) * 100 : 0, points, yearly };
+    }
+
+    // Tooltip state
+    const tooltip = el('chartTooltip');
+    let tooltipData = []; // [{month, x_ratio, balance, principal}]
+
+    function showTooltip(e, data) {
+      const { year, balance, principal } = data;
+      const profit = balance - principal;
+      tooltip.innerHTML = `
+        <div style="font-weight:700; margin-bottom:6px; color:#eef3ff;">経過年数 ${year}年</div>
+        <div class="tt-row">
+          <span class="tt-dot" style="background:#78a6ff;"></span>
+          <span style="color:#a9b4d0;">予想総資産</span>
+          <span style="margin-left:auto; font-weight:700; color:#78a6ff;">${fmtYen(balance)}</span>
+        </div>
+        <div class="tt-row">
+          <span class="tt-dot" style="background:#4ee1b5;"></span>
+          <span style="color:#a9b4d0;">元本</span>
+          <span style="margin-left:auto; font-weight:700; color:#4ee1b5;">${fmtYen(principal)}</span>
+        </div>
+        <div class="tt-row" style="margin-top:4px; padding-top:4px; border-top:1px solid rgba(255,255,255,.08);">
+          <span style="color:#a9b4d0;">運用益</span>
+          <span style="margin-left:auto; font-weight:700; color:${profit >= 0 ? '#4ee1b5' : '#ff8b8b'};">${fmtYen(profit)}</span>
+        </div>
+      `;
+      tooltip.style.display = 'block';
+      positionTooltip(e);
+    }
+
+    function positionTooltip(e) {
+      const tw = tooltip.offsetWidth;
+      const th = tooltip.offsetHeight;
+      let left = e.clientX + 14;
+      let top = e.clientY - th / 2;
+      if (left + tw > window.innerWidth - 8) left = e.clientX - tw - 14;
+      if (top < 4) top = 4;
+      if (top + th > window.innerHeight - 8) top = window.innerHeight - th - 8;
+      tooltip.style.left = left + 'px';
+      tooltip.style.top = top + 'px';
+    }
+
+    function hideTooltip() {
+      tooltip.style.display = 'none';
+    }
+
+    function renderChart(points) {
+      const svg = el('chart');
+      const w = 900, h = 420;
+      const pad = { top: 30, right: 18, bottom: 40, left: 70 };
+      const innerW = w - pad.left - pad.right;
+      const innerH = h - pad.top - pad.bottom;
+      const maxY = Math.max(...points.map(p => Math.max(p.balance, p.principal)), 1);
+      const unit = 1_000_000;
+      const scaleY = Math.ceil(maxY / unit) * unit;
+      const maxX = Math.max(...points.map(p => p.month), 1);
+      const x = (v) => pad.left + (v / maxX) * innerW;
+      const y = (v) => pad.top + innerH - (v / scaleY) * innerH;
+
+      const linePath = (key) => points.map((p, i) => `${i === 0 ? 'M' : 'L'} ${x(p.month).toFixed(2)} ${y(p[key]).toFixed(2)}`).join(' ');
+
+      const ticks = Math.min(Math.ceil(scaleY / unit), 20);
+      let grid = '';
+      for (let i = 0; i <= ticks; i++) {
+        const value = unit * i;
+        if (value > scaleY) break;
+        const yy = y(value);
+        grid += `<line x1="${pad.left}" y1="${yy}" x2="${w - pad.right}" y2="${yy}" stroke="#C0C0C0" />`;
+        grid += `<text x="${pad.left - 8}" y="${yy + 4}" text-anchor="end" fill="#666" font-size="12">${(value / 10000).toLocaleString('ja-JP')}</text>`;
+      }
+
+      const yearLabels = Math.min(10, Math.max(2, Math.floor(maxX / 12)));
+      let xlabels = '';
+      for (let i = 0; i <= yearLabels; i++) {
+        const month = Math.round((maxX / yearLabels) * i);
+        const xx = x(month);
+        xlabels += `<line x1="${xx}" y1="${pad.top}" x2="${xx}" y2="${h - pad.bottom}" stroke="#C0C0C0" />`;
+        xlabels += `<text x="${xx}" y="${h - 10}" text-anchor="middle" fill="#666" font-size="12">${(month / 12).toFixed(month % 12 === 0 ? 0 : 1)}年後</text>`;
+      }
+
+      // Build tooltip data for interactive circles
+      const yearPoints = points.filter(p => p.month % 12 === 0 && p.month > 0);
+      tooltipData = yearPoints.map(p => ({
+        year: p.month / 12,
+        balance: p.balance,
+        principal: p.principal,
+        cx: parseFloat(x(p.month).toFixed(2)),
+        cyBalance: parseFloat(y(p.balance).toFixed(2)),
+        cyPrincipal: parseFloat(y(p.principal).toFixed(2)),
+      }));
+
+      // Render circles — we'll handle mouse events via JS after setting innerHTML
+      let tooltipPoints = '';
+      yearPoints.forEach((p, i) => {
+        const px = x(p.month).toFixed(2);
+        const pyB = y(p.balance).toFixed(2);
+        const pyP = y(p.principal).toFixed(2);
+        tooltipPoints += `<circle class="tp-bal" data-idx="${i}" cx="${px}" cy="${pyB}" r="6" fill="#78a6ff" stroke="white" stroke-width="2" style="cursor:pointer" />`;
+        tooltipPoints += `<circle class="tp-pri" data-idx="${i}" cx="${px}" cy="${pyP}" r="6" fill="#4ee1b5" stroke="white" stroke-width="2" style="cursor:pointer" />`;
+      });
+
+      svg.innerHTML = `
+        <text x="${pad.left}" y="${pad.top - 10}" text-anchor="start" fill="#aaa" font-size="12">万円</text>
+        <defs>
+          <linearGradient id="fillBlue" x1="0" x2="0" y1="0" y2="1">
+            <stop offset="0%" stop-color="rgba(120,166,255,.25)" />
+            <stop offset="100%" stop-color="rgba(120,166,255,0)" />
+          </linearGradient>
+        </defs>
+        <rect x="0" y="0" width="900" height="420" rx="16" fill="white" />
+        ${grid}
+        ${xlabels}
+        <path d="${linePath('balance')} L ${x(maxX)} ${y(0)} L ${x(0)} ${y(0)} Z" fill="url(#fillBlue)" opacity="0.9"></path>
+        <path d="${linePath('principal')}" fill="none" stroke="#4ee1b5" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"></path>
+        <path d="${linePath('balance')}" fill="none" stroke="#78a6ff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"></path>
+        ${tooltipPoints}
+      `;
+
+      // Attach mouse events to circles
+      svg.querySelectorAll('circle[data-idx]').forEach(circle => {
+        const idx = parseInt(circle.getAttribute('data-idx'));
+        const data = tooltipData[idx];
+        circle.addEventListener('mouseenter', (e) => showTooltip(e, data));
+        circle.addEventListener('mousemove', positionTooltip);
+        circle.addEventListener('mouseleave', hideTooltip);
+      });
+    }
+
+    function renderTable(yearly) {
+      const tbody = el('yearlyTable');
+      tbody.innerHTML = yearly.map(row => `
+        <tr>
+          <td>${row.year}年目</td>
+          <td>${fmtYen(row.annualContribution)}</td>
+          <td>${fmtYen(row.principal)}</td>
+          <td>${fmtYen(row.balance)}</td>
+          <td style="color:${row.profit >= 0 ? '#4ee1b5' : '#ff8b8b'}">${fmtYen(row.profit)}</td>
+        </tr>
+      `).join('');
+    }
+
+    function calculate() {
+      const monthly = (Number(el('monthly').value) || 0) * 10000;
+      const annualRate = Number(el('annualRate').value) || 0;
+      const years = Number(el('years').value) || 0;
+      // initial is now in 万円 → multiply by 10000
+      const initial = (Number(el('initial').value) || 0) * 10000;
+      const timing = el('timing') ? el('timing').value : 'end';
+
+      const result = simulate({ monthly, annualRate, years, initial, timing });
+
+      el('finalValue').textContent = fmtYen(result.balance);
+      el('principal').textContent = fmtYen(result.principal);
+      el('profit').textContent = fmtYen(result.profit);
+      el('profit').className = `v ${result.profit >= 0 ? 'profit-positive' : 'profit-negative'}`;
+      el('roi').textContent = fmtPct(result.roi);
+      renderChart(result.points);
+      renderTable(result.yearly);
+    }
+
+    function clearEdited() {
+      ['monthly', 'annualRate', 'years', 'initial'].forEach(id => el(id).classList.remove('user-edited'));
+    }
+
+    function clearResults() {
+      el('finalValue').textContent = '-';
+      el('principal').textContent = '-';
+      el('profit').textContent = '-';
+      el('roi').textContent = '-';
+      el('chart').innerHTML = '';
+      el('yearlyTable').innerHTML = '';
+    }
+
+    function fillSample() {
+      el('monthly').value = 2;
+      el('annualRate').value = 7;
+      el('years').value = 20;
+      el('initial').value = 0;
+      clearEdited();
+      clearResults();
+    }
+
+    el('calcBtn').addEventListener('click', calculate);
+    el('sampleBtn').addEventListener('click', fillSample);
+
+    ['monthly', 'annualRate', 'years', 'initial'].forEach(id => {
+      el(id).addEventListener('input', () => {
+        el(id).classList.add('user-edited');
+        if (el('autoCalc').checked) {
+          calculate();
+        }
+      });
+    });
+  </script>
+</body>
+</html>
