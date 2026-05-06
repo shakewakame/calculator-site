@@ -481,11 +481,12 @@
         const year = p.month / 12;
         const balLabel = new Intl.NumberFormat('ja-JP',{style:'currency',currency:'JPY',maximumFractionDigits:0}).format(p.balance);
         const priLabel = new Intl.NumberFormat('ja-JP',{style:'currency',currency:'JPY',maximumFractionDigits:0}).format(p.principal);   
-        tooltipPoints += `<circle cx="${px}" cy="${pyB}" r="6" fill="#78a6ff"
-          onmousemove="showTooltip(event, '経過 ${year}年後<br>🔵 総資産 ${balLabel}<br>🟢 元本 ${priLabel}<br>🟡 運用益 ${fmtYen(p.balance - p.principal)}')"
-          onmouseleave="hideTooltip()"
-          style="cursor:pointer"
-        ></circle>`;
+        tooltipPoints += `<circle cx="${px}" cy="${pyB}" r="5" fill="#78a6ff" stroke="white" stroke-width="2" style="cursor:pointer">
+          <title>${year}年時点\n総資産: ${balLabel}</title>
+        </circle>`;
+        tooltipPoints += `<circle cx="${px}" cy="${pyP}" r="5" fill="#4ee1b5" stroke="white" stroke-width="2" style="cursor:pointer">
+          <title>${year}年時点\n元本: ${priLabel}</title>
+        </circle>`;
       });
 
       svg.innerHTML = `
