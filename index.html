@@ -438,6 +438,19 @@
       return { balance, principal, profit: balance - principal, roi: principal ? ((balance - principal) / principal) * 100 : 0, points, yearly };
     }
 
+    const tooltip = document.getElementById('tooltip');
+
+    function showTooltip(e, html) {
+      tooltip.innerHTML = html;
+      tooltip.style.left = e.pageX + 12 + 'px';
+      tooltip.style.top = e.pageY + 12 + 'px';
+      tooltip.style.opacity = 1;
+    }
+
+    function hideTooltip() {
+      tooltip.style.opacity = 0;
+    }
+    
     function renderChart(points) {
       const svg = el('chart');
       const w = 900, h = 420;
@@ -482,10 +495,16 @@
         const balLabel = new Intl.NumberFormat('ja-JP',{style:'currency',currency:'JPY',maximumFractionDigits:0}).format(p.balance);
         const priLabel = new Intl.NumberFormat('ja-JP',{style:'currency',currency:'JPY',maximumFractionDigits:0}).format(p.principal);   
         tooltipPoints += `<circle cx="${px}" cy="${pyB}" r="5" fill="#78a6ff" stroke="white" stroke-width="2" style="cursor:pointer">
-          <title>${year}年時点\n総資産: ${balLabel}</title>
+          onmousemove="showTooltip(event, '経過 ${year}年後<br>🔵 総資産 ${balLabel}<br>🟢 元本 ${priLabel}<br>🟡 運用益 ${fmtYen(p.balance - p.principal)}')"
+          onmouseleave="hideTooltip()"
+          style="cursor:pointer"
+        ></circle>`;
         </circle>`;
         tooltipPoints += `<circle cx="${px}" cy="${pyP}" r="5" fill="#4ee1b5" stroke="white" stroke-width="2" style="cursor:pointer">
-          <title>${year}年時点\n元本: ${priLabel}</title>
+          onmousemove="showTooltip(event, '経過 ${year}年後<br>🔵 総資産 ${balLabel}<br>🟢 元本 ${priLabel}<br>🟡 運用益 ${fmtYen(p.balance - p.principal)}')"
+          onmouseleave="hideTooltip()"
+          style="cursor:pointer"
+        ></circle>`;
         </circle>`;
       });
 
@@ -572,5 +591,17 @@
       });
     });
   </script>
+  <div id="tooltip" style="
+    position: absolute;
+    background: rgba(20,25,50,0.95);
+    color: #fff;
+    padding: 10px 12px;
+    border-radius: 10px;
+    font-size: 13px;
+    pointer-events: none;
+    opacity: 0;
+    transition: 0.15s;
+    z-index: 1000;
+"></div>
 </body>
 </html>
