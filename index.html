@@ -18,8 +18,19 @@
 <h2>計算ツール</h2>
 
 <label>毎月の積立額（円）</label><br>
-<input id="monthly" type="number"><br><br>
+<input id="monthly" type="number" placeholder="10000">
 
+<input id="monthly" type="number" value="10000">
+<input id="rate" type="number" value="5">
+<input id="years" type="number" value="20">
+
+<button onclick="calc()" style="padding:10px; font-size:16px;">
+計算する
+</button>
+
+
+<h3 id="result" style="color:blue; font-size:20px;"></h3>
+  
 <label>年利（%）</label><br>
 <input id="rate" type="number"><br><br>
 
