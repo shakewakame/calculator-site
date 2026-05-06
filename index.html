@@ -293,7 +293,7 @@
   <div class="wrap">
     <section class="hero">
       <div class="badge">📈 積立投資シミュレーター</div>
-      <h1>毎月の積立で、<br>将来いくらになるかをすぐ試算</h1>
+      <h1>毎月の積立で、<br>将来いくらになるかをすぐ計算</h1>
       <p class="lead">毎月の積立額・想定年利・運用年数・初期投資額を入力すると、資産の推移、元本、運用益をその場で確認できます。</p>
     </section>
 
@@ -326,7 +326,6 @@
           <div class="actions">
             <button class="primary" id="calcBtn">計算する</button>
             <button class="secondary" id="sampleBtn">初期値に戻す</button>
-            <button class="secondary" id="resetBtn">リセット</button>
           </div>
         </div>
 
@@ -378,7 +377,7 @@
 
         <section class="card table-card">
           <h2>年次サマリー</h2>
-          <div class="muted">各年末時点の元本と評価額を表示します。</div>
+          <div class="muted">元本と予想評価額を表示します。</div>
           <div style="overflow:auto; margin-top:8px;">
             <table>
               <thead>
@@ -386,7 +385,7 @@
                   <th>年</th>
                   <th>年間積立額</th>
                   <th>累計元本</th>
-                  <th>年末評価額</th>
+                  <th>予想評価額</th>
                   <th>累計運用益</th>
                 </tr>
               </thead>
@@ -561,18 +560,10 @@
       clearResults();
     }
 
-    function resetForm() {
-      el('monthly').value = 2;
-      el('annualRate').value = 7;
-      el('years').value = 20;
-      el('initial').value = 0;
-      clearEdited();
-      clearResults();
-    }
+   
 
     el('calcBtn').addEventListener('click', calculate);
     el('sampleBtn').addEventListener('click', fillSample);
-    el('resetBtn').addEventListener('click', resetForm);
     ['monthly', 'annualRate', 'years', 'initial'].forEach(id => {
       el(id).addEventListener('input', () => {
         el(id).classList.add('user-edited');
