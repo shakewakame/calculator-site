@@ -11,21 +11,21 @@
   <meta name="theme-color" content="#2563eb">
   <style>
     :root {
-      --bg: #f0f2f5;
+      --bg: #edf0f4;
       --surface: #ffffff;
-      --surface2: #f7f8fa;
-      --border: #dde1e9;
-      --text: #1a1f2e;
-      --text2: #4a5068;
-      --muted: #8892a4;
-      --accent: #2563eb;
+      --surface2: #f4f6f9;
+      --border: #c8cdd8;
+      --text: #111827;
+      --text2: #374151;
+      --muted: #6b7280;
+      --accent: #1d4ed8;
       --accent-light: #eff4ff;
-      --accent2: #0ea472;
-      --accent2-light: #edfaf5;
-      --danger: #dc2626;
-      --danger-light: #fff0f0;
-      --shadow-sm: 0 1px 4px rgba(0,0,0,.06), 0 4px 16px rgba(0,0,0,.06);
-      --shadow: 0 2px 8px rgba(0,0,0,.07), 0 8px 28px rgba(0,0,0,.07);
+      --accent2: #059669;
+      --accent2-light: #ecfdf5;
+      --danger: #b91c1c;
+      --danger-light: #fef2f2;
+      --shadow-sm: 0 1px 4px rgba(0,0,0,.08), 0 4px 16px rgba(0,0,0,.07);
+      --shadow: 0 2px 8px rgba(0,0,0,.09), 0 8px 28px rgba(0,0,0,.08);
       --radius: 16px;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -33,196 +33,189 @@
       font-family: "Hiragino Sans", "Noto Sans JP", "Yu Gothic UI", sans-serif;
       background: var(--bg);
       color: var(--text);
-      line-height: 1.6;
+      line-height: 1.75;
       min-height: 100vh;
-      font-size: 14px;
+      font-size: 15px;
     }
-
-    .wrap { max-width: 1200px; margin: 0 auto; padding: 20px 20px 60px; }
-
+    .wrap { max-width: 1220px; margin: 0 auto; padding: 22px 22px 70px; }
     .hero {
-      display: flex; align-items: center; gap: 16px;
-      margin-bottom: 20px; padding-bottom: 16px;
+      display: flex; align-items: center; gap: 18px;
+      margin-bottom: 22px; padding-bottom: 18px;
       border-bottom: 2px solid var(--border);
     }
     .logo-icon {
-      width: 44px; height: 44px; border-radius: 12px;
+      width: 48px; height: 48px; border-radius: 14px;
       background: var(--accent); display: grid; place-items: center;
-      font-size: 22px; flex-shrink: 0;
-      box-shadow: 0 4px 12px rgba(37,99,235,.3);
+      font-size: 24px; flex-shrink: 0;
+      box-shadow: 0 4px 14px rgba(29,78,216,.35);
     }
-    h1 { font-size: 20px; font-weight: 800; color: var(--text); letter-spacing: -0.02em; line-height: 1.2; }
-    .hero-sub { font-size: 13px; color: var(--muted); margin-top: 1px; }
-
+    h1 { font-size: 22px; font-weight: 800; color: var(--text); letter-spacing: -0.02em; line-height: 1.2; }
+    .hero-sub { font-size: 14px; color: var(--muted); margin-top: 2px; }
     .tab-bar {
-      display: flex; gap: 0; margin-bottom: 20px;
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: 12px; padding: 4px; width: fit-content;
+      display: flex; gap: 0; margin-bottom: 22px;
+      background: var(--surface); border: 1.5px solid var(--border);
+      border-radius: 14px; padding: 5px; width: fit-content;
       box-shadow: var(--shadow-sm);
     }
     .tab-btn {
       background: none; border: none;
-      color: var(--muted); font-size: 13px; font-weight: 600;
-      padding: 8px 20px; cursor: pointer; border-radius: 9px;
-      transition: all .18s; white-space: nowrap;
+      color: var(--muted); font-size: 14px; font-weight: 700;
+      padding: 10px 22px; cursor: pointer; border-radius: 10px;
+      transition: all .18s; white-space: nowrap; letter-spacing: -.01em;
     }
     .tab-btn:hover { color: var(--text); background: var(--bg); }
-    .tab-btn.active { background: var(--accent); color: white; box-shadow: 0 2px 8px rgba(37,99,235,.3); }
+    .tab-btn.active { background: var(--accent); color: white; box-shadow: 0 2px 10px rgba(29,78,216,.35); }
     .tab-panel { display: none; }
     .tab-panel.active { display: block; }
-
-    /* ── LAYOUT: 左パネル(条件) + 右(結果) 2カラム ── */
-    .grid { display: grid; grid-template-columns: 360px 1fr; gap: 18px; align-items: start; }
-
-    .card {
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: var(--radius); box-shadow: var(--shadow);
-    }
-    .panel { padding: 20px; position: sticky; top: 16px; }
+    .grid { display: grid; grid-template-columns: 390px 1fr; gap: 20px; align-items: start; }
+    .card { background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); }
+    .panel { padding: 22px; position: sticky; top: 16px; }
     .panel-title {
-      font-size: 15px; font-weight: 700; color: var(--text);
-      margin-bottom: 16px; padding-bottom: 12px;
-      border-bottom: 1px solid var(--border);
+      font-size: 16px; font-weight: 800; color: var(--text);
+      margin-bottom: 18px; padding-bottom: 14px;
+      border-bottom: 2px solid var(--border); letter-spacing: -.01em;
     }
-
-    /* 条件フォームは常に縦1カラム */
-    .form-grid {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 18px;
-      align-items: start;
-    }
+    .form-grid { display: grid; grid-template-columns: 1fr; gap: 20px; align-items: start; }
     .form-full { grid-column: 1 / -1; }
+    label { display: grid; gap: 8px; font-size: 14px; font-weight: 700; color: var(--text2); }
 
-    label { display: grid; gap: 6px; font-size: 13px; font-weight: 600; color: var(--text2); }
-
-    .input-slider-wrap { display: grid; gap: 8px; }
-    .input-row { display: flex; align-items: center; gap: 8px; }
-    .num-input {
-      width: 88px; border: 1.5px solid var(--border);
-      outline: none; background: var(--surface2); color: var(--text);
-      border-radius: 8px; padding: 7px 10px; font-size: 14px; font-weight: 700;
-      transition: .18s; text-align: right; flex-shrink: 0;
+    /* ── ±ボタン付き入力 ── */
+    .input-slider-wrap { display: grid; gap: 10px; }
+    .input-row { display: flex; align-items: center; gap: 0; }
+    .spin-btn {
+      width: 36px; height: 38px; border: 1.5px solid var(--border);
+      background: var(--surface2); color: var(--text2);
+      font-size: 20px; font-weight: 700; cursor: pointer;
+      display: grid; place-items: center; flex-shrink: 0;
+      transition: background .15s, color .15s;
+      line-height: 1; user-select: none; padding: 0;
     }
-    .num-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(37,99,235,.12); background: white; }
-    .unit-label { color: var(--muted); font-size: 12px; font-weight: 500; white-space: nowrap; }
-
+    .spin-btn:hover { background: var(--accent); color: white; border-color: var(--accent); }
+    .spin-btn:active { opacity: .8; }
+    .spin-btn.spin-minus { border-radius: 9px 0 0 9px; border-right: none; }
+    .spin-btn.spin-plus  { border-radius: 0 9px 9px 0; border-left: none; }
+    .num-input {
+      width: 96px; border: 1.5px solid var(--border);
+      outline: none; background: white; color: var(--text);
+      border-radius: 0; padding: 8px 10px; font-size: 15px; font-weight: 700;
+      transition: .18s; text-align: center; flex-shrink: 0;
+    }
+    .num-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(29,78,216,.13); background: white; z-index: 1; position: relative; }
+    .unit-label { color: var(--muted); font-size: 13px; font-weight: 600; white-space: nowrap; margin-left: 10px; }
     input[type="range"] {
       -webkit-appearance: none; appearance: none;
-      width: 100%; height: 5px; border-radius: 999px; outline: none; cursor: pointer; border: none;
-      background: linear-gradient(to right, var(--accent) var(--pct,0%), #dde1e9 var(--pct,0%));
+      width: 100%; height: 6px; border-radius: 999px; outline: none; cursor: pointer; border: none;
+      background: linear-gradient(to right, var(--accent) var(--pct,0%), #c8cdd8 var(--pct,0%));
     }
     input[type="range"]::-webkit-slider-thumb {
-      -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%;
-      background: white; cursor: pointer; border: 2.5px solid var(--accent);
-      box-shadow: 0 1px 4px rgba(37,99,235,.25); transition: box-shadow .18s;
+      -webkit-appearance: none; width: 20px; height: 20px; border-radius: 50%;
+      background: white; cursor: pointer; border: 3px solid var(--accent);
+      box-shadow: 0 1px 5px rgba(29,78,216,.3); transition: box-shadow .18s;
     }
-    input[type="range"]::-webkit-slider-thumb:hover { box-shadow: 0 0 0 6px rgba(37,99,235,.14); }
-
+    input[type="range"]::-webkit-slider-thumb:hover { box-shadow: 0 0 0 7px rgba(29,78,216,.14); }
     .range-labels {
       display: flex; justify-content: space-between;
-      font-size: 11px; color: var(--muted); margin-top: -2px;
+      font-size: 12px; color: var(--muted); font-weight: 500; margin-top: -4px;
     }
-
+    .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
     .toggle-group {
-      display: flex; background: var(--surface2); border-radius: 9px;
+      display: flex; background: var(--surface2); border-radius: 10px;
       border: 1.5px solid var(--border); padding: 3px; gap: 2px;
     }
     .toggle-group button {
-      flex: 1; border: none; border-radius: 6px;
-      padding: 7px 8px; font-size: 12px; font-weight: 600; cursor: pointer;
+      flex: 1; border: none; border-radius: 7px;
+      padding: 8px 8px; font-size: 13px; font-weight: 700; cursor: pointer;
       background: none; color: var(--muted); transition: all .16s;
     }
-    .toggle-group button.active { background: var(--accent); color: white; box-shadow: 0 1px 6px rgba(37,99,235,.3); }
-
-    .actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+    .toggle-group button.active { background: var(--accent); color: white; box-shadow: 0 1px 6px rgba(29,78,216,.3); }
+    .divider { height: 1.5px; background: var(--border); margin: 2px 0; }
+    .actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
     .btn-primary {
-      border: none; border-radius: 10px; padding: 11px 20px;
-      font-size: 14px; font-weight: 700; cursor: pointer;
+      border: none; border-radius: 11px; padding: 13px 22px;
+      font-size: 15px; font-weight: 800; cursor: pointer;
       background: var(--accent); color: white;
-      box-shadow: 0 2px 8px rgba(37,99,235,.3); transition: transform .12s, box-shadow .12s;
+      box-shadow: 0 2px 10px rgba(29,78,216,.3);
+      transition: transform .12s, box-shadow .12s; letter-spacing: -.01em;
     }
-    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 14px rgba(37,99,235,.38); }
+    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 5px 16px rgba(29,78,216,.38); }
     .btn-secondary {
-      border: 1.5px solid var(--border); border-radius: 10px;
-      padding: 10px 16px; font-size: 13px; font-weight: 600; cursor: pointer;
-      background: var(--surface2); color: var(--text2); transition: transform .12s, border-color .15s;
+      border: 1.5px solid var(--border); border-radius: 11px;
+      padding: 12px 18px; font-size: 14px; font-weight: 700; cursor: pointer;
+      background: var(--surface2); color: var(--text2);
+      transition: transform .12s, border-color .15s;
     }
     .btn-secondary:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-1px); }
-
     .auto-calc-wrap {
-      display: flex; align-items: center; gap: 7px;
-      font-size: 12px; color: var(--muted); cursor: pointer; user-select: none;
+      display: flex; align-items: center; gap: 8px;
+      font-size: 13px; color: var(--muted); cursor: pointer; user-select: none; font-weight: 600;
     }
     .auto-calc-wrap input[type="checkbox"] {
-      width: 14px; height: 14px; padding: 0; border-radius: 3px;
+      width: 16px; height: 16px; padding: 0; border-radius: 4px;
       accent-color: var(--accent); cursor: pointer; flex-shrink: 0;
     }
-
-    .divider { height: 1px; background: var(--border); grid-column: 1/-1; }
-
-    .right { display: grid; gap: 16px; }
-
-    .result-header { padding: 18px 20px 12px; border-bottom: 1px solid var(--border); }
-    .result-header h2 { font-size: 15px; font-weight: 700; color: var(--text); }
+    .right { display: grid; gap: 18px; }
+    .result-header { padding: 20px 22px 14px; border-bottom: 1.5px solid var(--border); }
+    .result-header h2 { font-size: 16px; font-weight: 800; color: var(--text); }
     .stats { display: grid; grid-template-columns: repeat(4,1fr); gap: 1px; background: var(--border); }
-    .stats-wrap { border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); border: 1px solid var(--border); }
-    .stat { background: var(--surface); padding: 16px 18px; }
-    .stat .k { color: var(--muted); font-size: 11px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; margin-bottom: 6px; }
-    .stat .v { font-size: clamp(15px, 1.6vw, 22px); font-weight: 800; color: var(--text); letter-spacing: -0.03em; line-height: 1.2; word-break: break-all; }
+    .stats-wrap { border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); border: 1.5px solid var(--border); }
+    .stat { background: var(--surface); padding: 18px 20px; }
+    .stat .k { color: var(--muted); font-size: 12px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; margin-bottom: 8px; }
+    .stat .v { font-size: clamp(16px, 1.8vw, 24px); font-weight: 800; color: var(--text); letter-spacing: -0.03em; line-height: 1.2; word-break: break-all; }
     .v-positive { color: var(--accent2) !important; }
     .v-negative { color: var(--danger) !important; }
-    .v-accent { color: var(--accent) !important; }
-
-    .chart-card { padding: 20px; }
-    .chart-title { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 2px; }
-    .chart-sub { font-size: 12px; color: var(--muted); margin-bottom: 14px; }
-    .chart-wrap {
-      background: var(--surface); border: 1.5px solid var(--border);
-      border-radius: 12px; overflow: hidden;
-    }
+    .v-accent   { color: var(--accent) !important; }
+    .chart-card { padding: 22px; }
+    .chart-title { font-size: 15px; font-weight: 800; color: var(--text); margin-bottom: 3px; }
+    .chart-sub   { font-size: 13px; color: var(--muted); font-weight: 500; margin-bottom: 16px; }
+    .chart-wrap { background: var(--surface); border: 1.5px solid var(--border); border-radius: 12px; overflow: hidden; }
     svg { width: 100%; height: auto; display: block; }
-
-    .legend { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 12px; }
-    .legend span { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text2); font-weight: 500; }
-    .dot { width: 10px; height: 10px; border-radius: 999px; display: inline-block; }
-
-    .table-card { padding: 18px 20px 20px; }
-    .table-title { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 10px; }
+    .animated-path { stroke-dasharray: 6000; stroke-dashoffset: 6000; animation: drawLine 1.4s cubic-bezier(.4,0,.2,1) forwards; }
+    @keyframes drawLine { to { stroke-dashoffset: 0; } }
+    .fill-fade { opacity: 0; animation: fadeIn .9s ease .4s forwards; }
+    @keyframes fadeIn { to { opacity: 1; } }
+    .legend { display: flex; gap: 18px; flex-wrap: wrap; margin-top: 14px; }
+    .legend span { display: inline-flex; align-items: center; gap: 7px; font-size: 13px; color: var(--text2); font-weight: 600; }
+    .dot { width: 11px; height: 11px; border-radius: 999px; display: inline-block; }
+    .table-card { padding: 20px 22px 22px; }
+    .table-title { font-size: 15px; font-weight: 800; color: var(--text); margin-bottom: 12px; }
     .table-wrap { overflow: auto; }
-    table { width: 100%; border-collapse: collapse; font-size: 13px; }
-    th {
-      padding: 9px 11px; text-align: right; font-weight: 700;
-      color: var(--text2); font-size: 11px; letter-spacing: .03em;
-      background: var(--surface2); border-bottom: 2px solid var(--border);
-    }
+    table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    th { padding: 11px 12px; text-align: right; font-weight: 800; color: var(--text2); font-size: 12px; letter-spacing: .04em; background: var(--surface2); border-bottom: 2px solid var(--border); }
     th:first-child { text-align: left; }
-    td { padding: 9px 11px; text-align: right; color: var(--text2); border-bottom: 1px solid var(--border); }
-    td:first-child { text-align: left; color: var(--text); font-weight: 600; }
+    td { padding: 11px 12px; text-align: right; color: var(--text2); border-bottom: 1.5px solid var(--border); font-size: 14px; }
+    td:first-child { text-align: left; color: var(--text); font-weight: 700; }
     tr:last-child td { border-bottom: none; }
     tr:hover td { background: var(--surface2); }
-
-    .note {
-      margin-top: 14px; padding: 11px 14px;
-      background: var(--surface2); border: 1px solid var(--border);
-      border-radius: 10px; color: var(--muted); font-size: 11.5px; line-height: 1.7;
-      grid-column: 1/-1;
-    }
-    .note strong { color: var(--text2); }
-
+    .note { margin-top: 16px; padding: 13px 16px; background: var(--surface2); border: 1.5px solid var(--border); border-radius: 11px; color: var(--muted); font-size: 13px; line-height: 1.8; }
+    .note strong { color: var(--text2); font-weight: 700; }
     .chart-tooltip {
       position: fixed; background: white; border: 1.5px solid var(--border);
-      border-radius: 10px; padding: 11px 15px; font-size: 12px; color: var(--text);
+      border-radius: 11px; padding: 13px 17px;
+      font-size: 13px; color: var(--text);
       pointer-events: none; z-index: 9999; display: none;
-      min-width: 190px; box-shadow: 0 8px 30px rgba(0,0,0,.12); line-height: 1.8;
+      min-width: 200px; box-shadow: 0 8px 32px rgba(0,0,0,.14); line-height: 1.9;
     }
-    .tt-row { display: flex; align-items: center; gap: 7px; }
-    .tt-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-    .tt-title { font-weight: 700; color: var(--text); margin-bottom: 5px; font-size: 13px; }
-    .tt-label { color: var(--muted); }
-    .tt-val { margin-left: auto; font-weight: 700; }
+    .tt-row { display: flex; align-items: center; gap: 8px; }
+    .tt-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+    .tt-title { font-weight: 800; color: var(--text); margin-bottom: 6px; font-size: 14px; }
+    .tt-label { color: var(--muted); font-weight: 600; }
+    .tt-val { margin-left: auto; font-weight: 800; }
+    .footer { margin-top: 22px; color: var(--muted); font-size: 13px; text-align: center; font-weight: 500; }
 
-    .footer { margin-top: 20px; color: var(--muted); font-size: 11px; text-align: center; }
+    /* NISA */
+    .nisa-stab { background: var(--surface2); border: 1.5px solid var(--border); border-radius: 9px; padding: 7px 16px; font-size: 13px; font-weight: 700; color: var(--text2); cursor: pointer; transition: all .16s; }
+    .nisa-stab.active { background: var(--accent); color: white; border-color: var(--accent); box-shadow: 0 2px 8px rgba(29,78,216,.25); }
+    .phase-row { background: var(--surface2); border: 1.5px solid var(--border); border-radius: 11px; padding: 14px; margin-bottom: 8px; }
+    .phase-del { border: none; background: none; color: var(--muted); cursor: pointer; font-size: 16px; padding: 4px 8px; border-radius: 6px; transition: color .15s, background .15s; }
+    .phase-del:hover { color: var(--danger); background: var(--danger-light); }
+    .scenario-card { background: var(--surface); border: 2px solid var(--border); border-radius: 14px; padding: 18px 20px; }
+    .scenario-card.active-card { border-color: var(--accent); }
+    .scenario-card-header { display:flex; align-items:center; gap:10px; margin-bottom:12px; }
+    .scenario-dot { width:14px; height:14px; border-radius:50%; flex-shrink:0; }
+    .scenario-card-title { font-size:15px; font-weight:800; color:var(--text); }
+    .scenario-stats { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; }
+    .scenario-stat .k { font-size:11px; font-weight:700; color:var(--muted); margin-bottom:4px; letter-spacing:.04em; text-transform:uppercase; }
+    .scenario-stat .v { font-size:16px; font-weight:800; color:var(--text); word-break:break-all; }
 
     @media (max-width: 980px) {
       .grid { grid-template-columns: 1fr; }
@@ -231,44 +224,10 @@
     }
     @media (max-width: 640px) {
       .stats { grid-template-columns: 1fr 1fr; }
-      .wrap { padding-inline: 12px; }
-      .tab-btn { font-size: 12px; padding: 7px 14px; }
+      .wrap { padding-inline: 14px; }
+      .tab-btn { font-size: 13px; padding: 9px 14px; }
     }
-    /* ── NISA scenario tab buttons ── */
-    .nisa-stab {
-      background: var(--surface2); border: 1.5px solid var(--border);
-      border-radius: 8px; padding: 5px 14px; font-size: 12px; font-weight: 700;
-      color: var(--text2); cursor: pointer; transition: all .16s;
-    }
-    .nisa-stab.active {
-      background: var(--accent); color: white; border-color: var(--accent);
-      box-shadow: 0 2px 8px rgba(37,99,235,.25);
-    }
-    /* Phase row */
-    .phase-row {
-      display: grid; grid-template-columns: 1fr 80px 32px; gap: 6px; align-items: end;
-      background: var(--surface2); border: 1px solid var(--border);
-      border-radius: 10px; padding: 10px 10px 10px 12px; margin-bottom:6px;
-    }
-    .phase-row label { font-size: 12px; color: var(--text2); }
-    .phase-del {
-      border: none; background: none; color: var(--muted); cursor: pointer;
-      font-size: 16px; line-height: 1; padding: 4px; border-radius: 6px; transition: color .15s;
-    }
-    .phase-del:hover { color: var(--danger); background: var(--danger-light,#fff0f0); }
-    /* Scenario result card */
-    .scenario-card {
-      background: var(--surface); border: 2px solid var(--border);
-      border-radius: 14px; padding: 16px 18px;
-    }
-    .scenario-card.active-card { border-color: var(--accent); }
-    .scenario-card-header { display:flex; align-items:center; gap:10px; margin-bottom:10px; }
-    .scenario-dot { width:14px; height:14px; border-radius:50%; flex-shrink:0; }
-    .scenario-card-title { font-size:14px; font-weight:700; color:var(--text); }
-    .scenario-stats { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; }
-    .scenario-stat .k { font-size:11px; color:var(--muted); margin-bottom:3px; }
-    .scenario-stat .v { font-size:15px; font-weight:800; color:var(--text); word-break:break-all; }
-  </style>
+</style>
 </head>
 <body>
 <div id="tt1" class="chart-tooltip"></div>
@@ -285,10 +244,10 @@
   </div>
 
   <div class="tab-bar">
-    <button class="tab-btn active" data-tab="tab1">💰 積立投資</button>
-    <button class="tab-btn" data-tab="tab2">💵 一括投資</button>
-    <button class="tab-btn" data-tab="tab3">📉 資産取り崩し</button>
-    <button class="tab-btn" data-tab="tab4">🌱 新NISAシミュレーター</button>
+    <button class="tab-btn active" data-tab="tab1">積立投資</button>
+    <button class="tab-btn" data-tab="tab2">一括投資</button>
+    <button class="tab-btn" data-tab="tab3">資産取り崩し</button>
+    <button class="tab-btn" data-tab="tab4">新NISAシミュレーター</button>
   </div>
 
   <!-- ═══════ TAB 1: 積立 ═══════ -->
@@ -591,7 +550,7 @@
 
         <!-- シナリオ設定カード -->
         <section class="card panel" style="position:sticky;top:16px;">
-          <div class="panel-title">🌱 新NISAシミュレーター設定</div>
+          <div class="panel-title">新NISAシミュレーター設定</div>
 
           <!-- シナリオ選択 -->
           <div style="margin-bottom:14px;">
@@ -645,7 +604,7 @@
                 <div class="range-labels"><span>0万</span><span>240万</span></div>
               </div>
               <div id="nisa-limit-warn" style="display:none;color:var(--danger);font-size:11px;margin-top:4px;">
-                ⚠️ 年間360万円（積立＋一括＋ボーナス）の上限を超えている期間があります
+                年間360万円（積立＋一括＋ボーナス）の上限を超えている期間があります
               </div>
             </label>
 
@@ -666,7 +625,7 @@
 
             <!-- NISA残枠表示 -->
             <div id="nisa-quota-display" style="background:var(--accent-light,#eff4ff);border:1.5px solid #bdd3ff;border-radius:10px;padding:12px 14px;font-size:12px;">
-              <div style="font-weight:700;color:var(--accent);margin-bottom:6px;">📊 NISA枠の状況（シミュレーション結果）</div>
+              <div style="font-weight:700;color:var(--accent);margin-bottom:6px;">NISA枠の状況</div>
               <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
                 <div>初年度投資額：<strong id="nq-annual">-</strong></div>
                 <div>年間上限まで：<strong id="nq-annual-rem">-</strong></div>
@@ -711,7 +670,7 @@
         <section class="card chart-card">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
             <div>
-              <div class="chart-title">📈 シナリオ比較グラフ</div>
+              <div class="chart-title">シナリオ比較グラフ</div>
               <div class="chart-sub">各シナリオの資産推移（総資産）を重ねて表示します。</div>
             </div>
           </div>
@@ -752,6 +711,69 @@
   const el = id => document.getElementById(id);
   const fmtYen = n => new Intl.NumberFormat('ja-JP',{style:'currency',currency:'JPY',maximumFractionDigits:0}).format(n);
   const fmtPct = n => n.toFixed(2) + '%';
+
+  // ── ±ボタン自動注入 ──
+  // .input-row 内の .num-input を探してその左にー、右に＋を追加
+  function injectSpinButtons() {
+    document.querySelectorAll('.input-row').forEach(row => {
+      const inp = row.querySelector('.num-input');
+      if (!inp || row.querySelector('.spin-btn')) return; // already injected or no input
+
+      const minus = document.createElement('button');
+      minus.type = 'button';
+      minus.className = 'spin-btn spin-minus';
+      minus.textContent = '−';
+      minus.setAttribute('aria-label', '減らす');
+
+      const plus = document.createElement('button');
+      plus.type = 'button';
+      plus.className = 'spin-btn spin-plus';
+      plus.textContent = '+';
+      plus.setAttribute('aria-label', '増やす');
+
+      // Insert minus before input, plus after
+      row.insertBefore(minus, inp);
+      inp.after(plus);
+
+      function step(dir) {
+        const s = parseFloat(inp.step) || 1;
+        const mn = inp.min !== '' ? parseFloat(inp.min) : -Infinity;
+        const mx = inp.max !== '' ? parseFloat(inp.max) :  Infinity;
+        const cur = parseFloat(inp.value) || 0;
+        // Round to avoid float drift
+        const decimals = (s.toString().split('.')[1] || '').length;
+        const next = Math.min(mx, Math.max(mn, parseFloat((cur + dir * s).toFixed(decimals))));
+        inp.value = next;
+        inp.dispatchEvent(new Event('input', { bubbles: true }));
+      }
+
+      // Click
+      minus.addEventListener('click', () => step(-1));
+      plus.addEventListener('click',  () => step( 1));
+
+      // Long-press repeat
+      let pressTimer = null, pressInterval = null;
+      function startRepeat(dir) {
+        pressTimer = setTimeout(() => {
+          pressInterval = setInterval(() => step(dir), 80);
+        }, 400);
+      }
+      function stopRepeat() {
+        clearTimeout(pressTimer); clearInterval(pressInterval);
+      }
+      [minus, plus].forEach(btn => {
+        const dir = btn === minus ? -1 : 1;
+        btn.addEventListener('mousedown', () => startRepeat(dir));
+        btn.addEventListener('touchstart', () => startRepeat(dir), { passive: true });
+      });
+      document.addEventListener('mouseup',  stopRepeat);
+      document.addEventListener('touchend', stopRepeat);
+    });
+  }
+
+  // Run after DOM ready and also observe dynamically added inputs (NISA phases)
+  injectSpinButtons();
+  new MutationObserver(injectSpinButtons).observe(document.body, { childList: true, subtree: true });
 
   // ── TABS ──
   document.querySelectorAll('.tab-btn').forEach(btn => {
@@ -1111,7 +1133,7 @@
     finalEl.textContent = fmtYen(r.finalBal);
     finalEl.className = 'v ' + (r.finalBal > 0 ? 'v-positive' : 'v-negative');
     const v = el('t3-verdict');
-    v.textContent = r.survived ? '✅ 持続可能' : '❌ 資産枯渇';
+    v.textContent = r.survived ? '持続可能' : '資産枯渇';
     v.className = 'v ' + (r.survived?'v-positive':'v-negative');
     renderChart('chart3', r.pts, [
       {key:'balance', color:'#2563eb', label:'資産残高', w:3.5},
@@ -1176,7 +1198,7 @@
         <div style="display:flex;align-items:center;justify-content:space-between;">
           <div style="display:flex;align-items:center;gap:8px;">
             <span style="font-size:12px;font-weight:700;color:var(--accent);">
-              ${i === 0 ? '📅 開始時〜' : `${ph.startYear}年目〜`}
+              ${i === 0 ? '開始時〜' : `${ph.startYear}年目〜`}
             </span>
             ${i > 0 ? `<input class="num-input" type="number" min="2" max="40" value="${ph.startYear}"
               style="width:52px;font-size:12px;padding:4px 6px;"
@@ -1207,7 +1229,7 @@
         </div>
         <div style="font-size:11px;margin-top:4px;${over?'color:var(--danger);font-weight:600;':'color:var(--muted);'}">
           この期間の年間合計：${annualThis.toFixed(0)}万円
-          ${over ? ' ⚠️ 上限(360万)超過 → 自動でカット' : '／360万円まで'}
+          ${over ? ' 上限(360万)超過 → 自動でカット' : '／360万円まで'}
         </div>
       </div>`;
     }).join('');
