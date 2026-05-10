@@ -69,7 +69,7 @@
     .tab-panel.active { display: block; }
     .grid { display: grid; grid-template-columns: 390px 1fr; gap: 20px; align-items: start; }
     .card { background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); }
-    .panel { padding: 22px; position: sticky; top: 16px; }
+    .panel { padding: 22px; position: sticky; top: 16px; max-height: calc(100vh - 32px); overflow-y: auto; }
     .panel-title {
       font-size: 16px; font-weight: 800; color: var(--text);
       margin-bottom: 18px; padding-bottom: 14px;
@@ -227,6 +227,57 @@
       .wrap { padding-inline: 14px; }
       .tab-btn { font-size: 13px; padding: 9px 14px; }
     }
+
+    /* ── シナリオ比較 (Tab 1-3) ── */
+    .compare-bar {
+      display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+      background: var(--surface); border: 1.5px solid var(--border);
+      border-radius: 12px; padding: 12px 16px; margin-bottom: 4px;
+      box-shadow: var(--shadow-sm);
+    }
+    .compare-bar label { gap:6px; font-size:13px; font-weight:700; color:var(--text2); flex-direction:row; align-items:center; }
+    .compare-bar input[type="checkbox"] { width:16px;height:16px;accent-color:var(--accent);cursor:pointer;flex-shrink:0; }
+    .compare-scenario-tabs { display:flex; gap:6px; flex-wrap:wrap; }
+    .cmp-stab {
+      background: var(--surface2); border: 1.5px solid var(--border);
+      border-radius: 8px; padding: 5px 14px; font-size: 13px; font-weight: 700;
+      color: var(--text2); cursor: pointer; transition: all .16s;
+    }
+    .cmp-stab.active { background: var(--accent); color: white; border-color: var(--accent); }
+    .cmp-add-btn {
+      background: none; border: 1.5px dashed var(--border); border-radius: 8px;
+      padding: 5px 12px; font-size: 12px; font-weight: 700; color: var(--muted);
+      cursor: pointer; transition: border-color .15s, color .15s;
+    }
+    .cmp-add-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .cmp-del-btn {
+      background: none; border: none; color: var(--muted); cursor: pointer;
+      font-size: 13px; padding: 2px 5px; border-radius: 5px; transition: color .15s;
+      margin-left: -4px;
+    }
+    .cmp-del-btn:hover { color: var(--danger); }
+
+    .phase-sum-ok  { font-size:11px; margin-top:6px; color:var(--muted); }
+    .phase-sum-over { font-size:11px; margin-top:6px; color:var(--danger); font-weight:600; }
+
+    /* NISAフェーズの月額・一括を縦並び */
+    .phase-inputs-col { display:grid; grid-template-columns:1fr; gap:8px; margin-top:6px; }
+    .phase-input-block { display:grid; gap:6px; }
+    .phase-input-block .pi-label { font-size:11px;font-weight:700;color:var(--text2); }
+    .phase-input-row { display:flex; align-items:center; gap:0; }
+
+    /* ── 条件入力パネル内シナリオ比較 ── */
+    .panel-cmp-bar {
+      background: var(--accent-light); border: 1.5px solid #bdd3ff;
+      border-radius: 11px; padding: 11px 14px; margin-bottom: 16px;
+    }
+    .panel-cmp-label {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 13px; font-weight: 800; color: var(--accent); cursor: pointer;
+      flex-direction: row;
+    }
+    .panel-cmp-label input[type="checkbox"] { width:16px;height:16px;accent-color:var(--accent);cursor:pointer;flex-shrink:0; }
+    .panel-cmp-row { display:flex; gap:6px; flex-wrap:wrap; align-items:center; margin-top:10px; }
 </style>
 </head>
 <body>
@@ -255,6 +306,14 @@
     <main class="grid">
       <section class="card panel">
         <div class="panel-title">積立条件を入力</div>
+        <!-- シナリオ比較 -->
+        <div class="panel-cmp-bar" id="t1-panel-cmp-bar">
+          <label class="panel-cmp-label"><input type="checkbox" id="t1-cmp-on"> シナリオ比較</label>
+          <div class="panel-cmp-row" id="t1-panel-cmp-row" style="display:none">
+            <div class="compare-scenario-tabs" id="t1-cmp-tabs"></div>
+            <button class="cmp-add-btn" id="t1-cmp-add">＋ シナリオ追加</button>
+          </div>
+        </div>
         <div class="form-grid">
           <label>毎月の積立額
             <div class="input-slider-wrap">
@@ -316,18 +375,18 @@
           <div class="result-header"><h2>シミュレーション結果</h2></div>
           <div class="stats">
             <div class="stat"><div class="k">予想評価額</div><div class="v v-accent" id="t1-final">-</div></div>
-            <div class="stat"><div class="k">積立元本</div><div class="v" id="t1-principal">-</div></div>
+            <div class="stat"><div class="k">投資元本</div><div class="v" id="t1-principal">-</div></div>
             <div class="stat"><div class="k">運用益</div><div class="v" id="t1-profit">-</div></div>
             <div class="stat"><div class="k">利益率</div><div class="v" id="t1-roi">-</div></div>
           </div>
         </div>
         <section class="card chart-card">
           <div class="chart-title">資産推移グラフ</div>
-          <div class="chart-sub">青が総資産、緑が積立元本です。</div>
+          <div class="chart-sub" id="t1-chart-sub">青が総資産、緑が投資元本です。</div>
           <div class="chart-wrap"><svg id="chart1" viewBox="0 0 900 380"></svg></div>
-          <div class="legend">
+          <div class="legend" id="t1-legend">
             <span><i class="dot" style="background:#2563eb"></i>総資産</span>
-            <span><i class="dot" style="background:#0ea472"></i>積立元本</span>
+            <span><i class="dot" style="background:#0ea472"></i>投資元本</span>
           </div>
         </section>
         <section class="card table-card">
@@ -348,6 +407,14 @@
     <main class="grid">
       <section class="card panel">
         <div class="panel-title">一括投資条件を入力</div>
+        <!-- シナリオ比較 -->
+        <div class="panel-cmp-bar" id="t2-panel-cmp-bar">
+          <label class="panel-cmp-label"><input type="checkbox" id="t2-cmp-on"> シナリオ比較</label>
+          <div class="panel-cmp-row" id="t2-panel-cmp-row" style="display:none">
+            <div class="compare-scenario-tabs" id="t2-cmp-tabs"></div>
+            <button class="cmp-add-btn" id="t2-cmp-add">＋ シナリオ追加</button>
+          </div>
+        </div>
         <div class="form-grid">
           <label>投資元本（一括）
             <div class="input-slider-wrap">
@@ -399,7 +466,7 @@
         <div class="stats-wrap">
           <div class="result-header"><h2>シミュレーション結果</h2></div>
           <div class="stats">
-            <div class="stat"><div class="k">最終評価額</div><div class="v v-accent" id="t2-final">-</div></div>
+            <div class="stat"><div class="k">予想評価額</div><div class="v v-accent" id="t2-final">-</div></div>
             <div class="stat"><div class="k">投資元本</div><div class="v" id="t2-princ-disp">-</div></div>
             <div class="stat"><div class="k">運用益</div><div class="v" id="t2-profit">-</div></div>
             <div class="stat"><div class="k">利益率</div><div class="v" id="t2-roi">-</div></div>
@@ -407,9 +474,9 @@
         </div>
         <section class="card chart-card">
           <div class="chart-title">資産推移グラフ</div>
-          <div class="chart-sub">青が評価額、緑が元本（一定）です。</div>
+          <div class="chart-sub" id="t2-chart-sub">青が評価額、緑が元本（一定）です。</div>
           <div class="chart-wrap"><svg id="chart2" viewBox="0 0 900 380"></svg></div>
-          <div class="legend">
+          <div class="legend" id="t2-legend">
             <span><i class="dot" style="background:#2563eb"></i>評価額</span>
             <span><i class="dot" style="background:#0ea472"></i>元本</span>
           </div>
@@ -432,6 +499,14 @@
     <main class="grid">
       <section class="card panel">
         <div class="panel-title">取り崩し条件を入力</div>
+        <!-- シナリオ比較 -->
+        <div class="panel-cmp-bar" id="t3-panel-cmp-bar">
+          <label class="panel-cmp-label"><input type="checkbox" id="t3-cmp-on"> シナリオ比較</label>
+          <div class="panel-cmp-row" id="t3-panel-cmp-row" style="display:none">
+            <div class="compare-scenario-tabs" id="t3-cmp-tabs"></div>
+            <button class="cmp-add-btn" id="t3-cmp-add">＋ シナリオ追加</button>
+          </div>
+        </div>
         <div class="form-grid">
           <label>運用資産額（取り崩し開始時）
             <div class="input-slider-wrap">
@@ -522,9 +597,9 @@
         </div>
         <section class="card chart-card">
           <div class="chart-title">資産残高推移グラフ</div>
-          <div class="chart-sub">取り崩しながらの資産残高の推移です。</div>
+          <div class="chart-sub" id="t3-chart-sub">取り崩しながらの資産残高の推移です。</div>
           <div class="chart-wrap"><svg id="chart3" viewBox="0 0 900 380"></svg></div>
-          <div class="legend">
+          <div class="legend" id="t3-legend">
             <span><i class="dot" style="background:#2563eb"></i>資産残高</span>
           </div>
         </section>
@@ -552,24 +627,22 @@
         <section class="card panel" style="position:sticky;top:16px;">
           <div class="panel-title">新NISAシミュレーター設定</div>
 
-          <!-- シナリオ選択 -->
-          <div style="margin-bottom:14px;">
-            <div style="font-size:12px;font-weight:700;color:var(--text2);margin-bottom:8px;">シナリオ選択</div>
-            <div style="display:flex;gap:6px;flex-wrap:wrap;" id="nisa-scenario-tabs">
-              <button class="nisa-stab active" data-s="0">シナリオ A</button>
-              <button class="nisa-stab" data-s="1">シナリオ B</button>
-              <button class="nisa-stab" data-s="2">シナリオ C</button>
-              <button style="background:none;border:1.5px dashed var(--border);border-radius:8px;padding:5px 12px;font-size:12px;font-weight:600;color:var(--muted);cursor:pointer;" id="nisa-add-scenario">＋ 追加</button>
+          <!-- シナリオ選択（他タブと統一UI） -->
+          <div class="panel-cmp-bar" style="margin-bottom:16px;">
+            <label class="panel-cmp-label"><input type="checkbox" id="nisa-cmp-on"> シナリオ比較</label>
+            <div id="nisa-cmp-body" style="display:none;">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-top:10px;margin-bottom:6px;">
+                <div class="panel-cmp-row" style="margin-top:0;flex:1;" id="nisa-scenario-tabs"></div>
+                <button class="cmp-add-btn" id="nisa-add-scenario" style="margin-left:8px;">＋ シナリオ追加</button>
+              </div>
+              <div style="display:flex;align-items:center;gap:8px;" id="nisa-name-row">
+                <span style="font-size:12px;font-weight:700;color:var(--text2);white-space:nowrap;">シナリオ名</span>
+                <input type="text" id="ns-name" style="flex:1;border:1.5px solid var(--border);border-radius:8px;padding:5px 10px;font-size:13px;font-weight:700;color:var(--text);outline:none;background:white;" value="シナリオ A">
+              </div>
             </div>
           </div>
 
           <div class="form-grid" id="nisa-form">
-
-            <!-- シナリオ名 -->
-            <label>シナリオ名
-              <input type="text" class="num-input" id="ns-name" value="シナリオ A"
-                style="width:100%;text-align:left;font-size:13px;">
-            </label>
 
             <!-- 想定年利 -->
             <label>想定年利
@@ -646,6 +719,9 @@
             <div class="actions">
               <button class="btn-primary" id="nisa-calc">計算する</button>
               <button class="btn-secondary" id="nisa-reset">リセット</button>
+              <label class="auto-calc-wrap">
+                <input type="checkbox" id="ns-auto"> 自動で再計算
+              </label>
             </div>
 
           </div><!-- /form-grid -->
@@ -665,6 +741,17 @@
 
       <!-- RIGHT: 結果 -->
       <div style="display:grid;gap:16px;" id="nisa-right">
+
+        <!-- アクティブシナリオ サマリー数値 -->
+        <div class="stats-wrap" id="nisa-stats-wrap">
+          <div class="result-header"><h2 id="nisa-stats-title">シミュレーション結果</h2></div>
+          <div class="stats">
+            <div class="stat"><div class="k">予想評価額</div><div class="v v-accent" id="nisa-stat-final">-</div></div>
+            <div class="stat"><div class="k">投資元本</div><div class="v" id="nisa-stat-principal">-</div></div>
+            <div class="stat"><div class="k">運用益</div><div class="v" id="nisa-stat-profit">-</div></div>
+            <div class="stat"><div class="k">利益率</div><div class="v" id="nisa-stat-roi">-</div></div>
+          </div>
+        </div>
 
         <!-- 比較グラフ -->
         <section class="card chart-card">
@@ -1024,7 +1111,7 @@
     el('t1-roi').textContent = fmtPct(r.roi);
     renderChart('chart1', r.pts, [
       {key:'balance',   color:'#2563eb', label:'総資産', w:3.5},
-      {key:'principal', color:'#0ea472', label:'積立元本', w:2.5},
+      {key:'principal', color:'#0ea472', label:'投資元本', w:2.5},
     ], tt1);
     el('t1-table').innerHTML = r.rows.map(row => `<tr>
       <td>${row.year}年目</td>
@@ -1039,13 +1126,7 @@
     Object.entries(def1).forEach(([id,v]) => { el(id).value=v; el(id+'-r').value=v; el(id+'-r').dispatchEvent(new Event('input')); });
     calc1();
   }
-  el('t1-calc').addEventListener('click', calc1);
-  el('t1-reset').addEventListener('click', reset1);
-  const auto1 = () => { if(el('t1-auto').checked) calc1(); };
-  ['t1-monthly','t1-rate','t1-years','t1-initial'].forEach(id => linkSlider(id, id+'-r', auto1));
-  calc1();
-
-  // ════════ TAB 2: 一括 ════════
+  // NISA events
   function simulate2() {
     const prin = (parseFloat(el('t2-principal').value)||0) * 10000;
     const rate = parseFloat(el('t2-rate').value)||0;
@@ -1085,13 +1166,7 @@
     Object.entries(def2).forEach(([id,v]) => { el(id).value=v; el(id+'-r').value=v; el(id+'-r').dispatchEvent(new Event('input')); });
     calc2();
   }
-  el('t2-calc').addEventListener('click', calc2);
-  el('t2-reset').addEventListener('click', reset2);
-  const auto2 = () => { if(el('t2-auto').checked) calc2(); };
-  ['t2-principal','t2-rate','t2-years'].forEach(id => linkSlider(id, id+'-r', auto2));
-  calc2();
-
-  // ════════ TAB 3: 取り崩し ════════
+  // ════════ TAB 2: 一括 ════════
   let withdrawMode = 'pct';
   function setWithdrawMode(mode) {
     withdrawMode = mode;
@@ -1155,14 +1230,7 @@
     setWithdrawMode('pct');
     calc3();
   }
-  el('t3-calc').addEventListener('click', calc3);
-  el('t3-reset').addEventListener('click', reset3);
-  const auto3 = () => { if(el('t3-auto').checked) calc3(); };
-  ['t3-asset','t3-rate','t3-amt','t3-return','t3-years'].forEach(id => linkSlider(id, id+'-r', auto3));
-  calc3();
-
-
-  // ════════ TAB 4: 新NISA ════════
+  // ════════ TAB 3: 取り崩し ════════
   const NISA_LIFETIME  = 1800; // 万円
   const NISA_ANNUAL    = 360;  // 万円/年
   const NISA_LUMP_MAX  = 240;  // 万円/年（成長投資枠）
@@ -1193,9 +1261,11 @@
     list.innerHTML = sc.phases.map((ph, i) => {
       const annualThis = Math.min(ph.monthly, 10) * 12 + Math.min(ph.lump, NISA_LUMP_MAX);
       const over = annualThis > NISA_ANNUAL;
+      const mPct = (ph.monthly / 10 * 100).toFixed(1);
+      const lPct = (ph.lump / 240 * 100).toFixed(1);
       return `
-      <div class="phase-row" data-pi="${i}" style="grid-template-columns:1fr;gap:8px;padding:12px;">
-        <div style="display:flex;align-items:center;justify-content:space-between;">
+      <div class="phase-row" data-pi="${i}">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
           <div style="display:flex;align-items:center;gap:8px;">
             <span style="font-size:12px;font-weight:700;color:var(--accent);">
               ${i === 0 ? '開始時〜' : `${ph.startYear}年目〜`}
@@ -1207,32 +1277,98 @@
           </div>
           ${i > 0 ? `<button class="phase-del" onclick="removePhase(${i})">✕</button>` : ''}
         </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px;">
-          <div>
-            <div style="font-size:11px;font-weight:600;color:var(--text2);margin-bottom:4px;">月額積立（最大10万円）</div>
-            <div style="display:flex;align-items:center;gap:4px;">
+        <div class="phase-inputs-col">
+          <!-- 月額積立 -->
+          <div class="phase-input-block">
+            <div class="pi-label">月額積立（最大10万円）</div>
+            <div class="phase-input-row">
+              <button type="button" class="spin-btn spin-minus" onclick="stepPhase(${i},'monthly',-0.1)">−</button>
               <input class="num-input" type="number" min="0" max="10" step="0.1" value="${ph.monthly}"
-                style="width:64px;font-size:13px;" onchange="updatePhase(${i},'monthly',+this.value)">
-              <span class="unit-label">万円/月</span>
+                style="width:72px;font-size:13px;text-align:center;"
+                onchange="commitPhase(${i},'monthly',+this.value)" id="phase-m-${i}">
+              <button type="button" class="spin-btn spin-plus" onclick="stepPhase(${i},'monthly',0.1)">+</button>
+              <span class="unit-label" style="margin-left:8px;">万円/月</span>
             </div>
-            <div style="font-size:10px;color:var(--muted);margin-top:2px;">年${(Math.min(ph.monthly,10)*12).toFixed(0)}万円</div>
+            <input type="range" min="0" max="10" step="0.1" value="${ph.monthly}"
+              style="--pct:${mPct}%;width:100%;margin-top:4px;"
+              oninput="livePhase(${i},'monthly',+this.value,this)"
+              onchange="commitPhase(${i},'monthly',+this.value)" id="phase-mr-${i}">
+            <div class="range-labels"><span>0万</span><span>10万</span></div>
+            <div style="font-size:10px;color:var(--muted);" id="phase-m-hint-${i}">年${(Math.min(ph.monthly,10)*12).toFixed(1)}万円</div>
           </div>
-          <div>
-            <div style="font-size:11px;font-weight:600;color:var(--text2);margin-bottom:4px;">年間一括投資（最大240万円）</div>
-            <div style="display:flex;align-items:center;gap:4px;">
+          <!-- 年間一括 -->
+          <div class="phase-input-block">
+            <div class="pi-label">年間一括投資（最大240万円）</div>
+            <div class="phase-input-row">
+              <button type="button" class="spin-btn spin-minus" onclick="stepPhase(${i},'lump',-10)">−</button>
               <input class="num-input" type="number" min="0" max="240" step="10" value="${ph.lump}"
-                style="width:64px;font-size:13px;" onchange="updatePhase(${i},'lump',+this.value)">
-              <span class="unit-label">万円/年</span>
+                style="width:72px;font-size:13px;text-align:center;"
+                onchange="commitPhase(${i},'lump',+this.value)" id="phase-l-${i}">
+              <button type="button" class="spin-btn spin-plus" onclick="stepPhase(${i},'lump',10)">+</button>
+              <span class="unit-label" style="margin-left:8px;">万円/年</span>
             </div>
-            <div style="font-size:10px;color:var(--muted);margin-top:2px;">成長投資枠</div>
+            <input type="range" min="0" max="240" step="10" value="${ph.lump}"
+              style="--pct:${lPct}%;width:100%;margin-top:4px;"
+              oninput="livePhase(${i},'lump',+this.value,this)"
+              onchange="commitPhase(${i},'lump',+this.value)" id="phase-lr-${i}">
+            <div class="range-labels"><span>0万</span><span>240万</span></div>
+            <div style="font-size:10px;color:var(--muted);">成長投資枠</div>
           </div>
         </div>
-        <div style="font-size:11px;margin-top:4px;${over?'color:var(--danger);font-weight:600;':'color:var(--muted);'}">
+        <div style="font-size:11px;margin-top:6px;" id="phase-sum-${i}" class="${over?'phase-sum-over':'phase-sum-ok'}">
           この期間の年間合計：${annualThis.toFixed(0)}万円
           ${over ? ' 上限(360万)超過 → 自動でカット' : '／360万円まで'}
         </div>
       </div>`;
     }).join('');
+  }
+
+  // スライダードラッグ中：DOMを再生成せずに表示だけ更新
+  function livePhase(i, key, val, rangeEl) {
+    const sc = getActiveScenario();
+    sc.phases[i][key] = val;
+    // スライダーの塗り色更新
+    const max = key === 'monthly' ? 10 : 240;
+    rangeEl.style.setProperty('--pct', (val / max * 100) + '%');
+    // 連動する数値入力を更新
+    const numEl = el(key === 'monthly' ? `phase-m-${i}` : `phase-l-${i}`);
+    if (numEl) numEl.value = val;
+    // 月額の場合は年換算ヒントを更新
+    if (key === 'monthly') {
+      const hint = el(`phase-m-hint-${i}`);
+      if (hint) hint.textContent = `年${(Math.min(val, 10) * 12).toFixed(1)}万円`;
+    }
+    // 年間合計テキストを更新
+    const ph = sc.phases[i];
+    const annualThis = Math.min(ph.monthly, 10) * 12 + Math.min(ph.lump, NISA_LUMP_MAX);
+    const over = annualThis > NISA_ANNUAL;
+    const sumEl = el(`phase-sum-${i}`);
+    if (sumEl) {
+      sumEl.textContent = `この期間の年間合計：${annualThis.toFixed(0)}万円${over ? ' 上限(360万)超過 → 自動でカット' : '／360万円まで'}`;
+      sumEl.className = over ? 'phase-sum-over' : 'phase-sum-ok';
+    }
+    updateNisaQuota();
+    if (el('ns-auto') && el('ns-auto').checked) calcNisa();
+  }
+
+  // ドラッグ確定 or 数値入力確定時：フル再描画
+  function commitPhase(i, key, val) {
+    getActiveScenario().phases[i][key] = val;
+    renderPhases();
+    updateNisaQuota();
+    if (el('ns-auto') && el('ns-auto').checked) calcNisa();
+  }
+
+  function stepPhase(i, key, delta) {
+    const sc = getActiveScenario();
+    const ph = sc.phases[i];
+    const mx = key === 'monthly' ? 10 : 240;
+    const decimals = key === 'monthly' ? 1 : 0;
+    const next = Math.min(mx, Math.max(0, parseFloat((ph[key] + delta).toFixed(decimals))));
+    ph[key] = next;
+    renderPhases();
+    updateNisaQuota();
+    if (el('ns-auto') && el('ns-auto').checked) calcNisa();
   }
 
   function updatePhase(i, key, val) {
@@ -1414,7 +1550,7 @@
         dotsSvg += `<circle class="nyd" data-si="${si}" data-i="${i}"
           cx="${pxFn(p.year).toFixed(1)}" cy="${pyFn(p.balance).toFixed(1)}"
           r="${isActive?5:4}" fill="${color}" stroke="white" stroke-width="2"
-          style="cursor:pointer;opacity:0;transition:r .1s"/>`;
+          style="cursor:pointer;transition:r .1s"/>`;
       });
     });
 
@@ -1451,7 +1587,10 @@
       });
       rect.addEventListener('mousemove', e => nisaTT.move(e));
       rect.addEventListener('mouseleave', () => {
-        svg.querySelectorAll('.nyd').forEach(d => d.style.opacity='0');
+        svg.querySelectorAll('.nyd').forEach(d => {
+          const si = +d.dataset.si;
+          d.setAttribute('r', si === activeScenarioIdx ? '5' : '4');
+        });
         nisaTT.hide();
       });
     });
@@ -1474,7 +1613,7 @@
           ${isActive ? '<span style="font-size:11px;color:var(--accent);font-weight:700;margin-left:auto;">▶ 表示中</span>' : ''}
         </div>
         <div class="scenario-stats">
-          <div class="scenario-stat"><div class="k">最終評価額</div><div class="v" style="color:${color}">${fmtYen(res.finalBal)}</div></div>
+          <div class="scenario-stat"><div class="k">予想評価額</div><div class="v" style="color:${color}">${fmtYen(res.finalBal)}</div></div>
           <div class="scenario-stat"><div class="k">投資元本</div><div class="v">${fmtYen(res.principal)}</div></div>
           <div class="scenario-stat"><div class="k">運用益</div><div class="v" style="color:${res.profit>=0?'var(--accent2)':'var(--danger)'}">${fmtYen(res.profit)}</div></div>
           <div class="scenario-stat"><div class="k">利益率</div><div class="v">${fmtPct(res.roi)}</div></div>
@@ -1501,6 +1640,19 @@
     renderNisaScenarioCards(allResults);
     renderNisaTable(allResults[activeScenarioIdx]);
     updateNisaQuota();
+    // アクティブシナリオの数値を上部サマリーに反映
+    updateNisaStats(allResults[activeScenarioIdx]);
+  }
+
+  function updateNisaStats(res) {
+    const sc = nisaScenarios[activeScenarioIdx];
+    el('nisa-stats-title').textContent = `シミュレーション結果（${sc.name}）`;
+    el('nisa-stat-final').textContent = fmtYen(res.finalBal);
+    el('nisa-stat-principal').textContent = fmtYen(res.principal);
+    const profit = res.profit;
+    el('nisa-stat-profit').textContent = fmtYen(profit);
+    el('nisa-stat-profit').className = 'v ' + (profit >= 0 ? 'v-positive' : 'v-negative');
+    el('nisa-stat-roi').textContent = fmtPct(res.roi);
   }
 
   function switchNisaScenario(idx) {
@@ -1508,24 +1660,392 @@
     activeScenarioIdx = idx;
     document.querySelectorAll('.nisa-stab').forEach((b,i) => b.classList.toggle('active', i===idx));
     loadScenarioToForm(getActiveScenario());
+    // 即座にグラフ・テーブルを更新
+    const allResults = nisaScenarios.map(simulateNisa);
+    renderNisaChart(allResults);
+    renderNisaScenarioCards(allResults);
+    renderNisaTable(allResults[activeScenarioIdx]);
+    updateNisaQuota();
+    updateNisaStats(allResults[activeScenarioIdx]);
   }
 
   function renderNisaScenarioTabs() {
     const bar = el('nisa-scenario-tabs');
-    const addBtn = el('nisa-add-scenario');
     bar.innerHTML = '';
     nisaScenarios.forEach((sc, i) => {
       const btn = document.createElement('button');
-      btn.className = 'nisa-stab' + (i===activeScenarioIdx?' active':'');
+      btn.className = 'cmp-stab' + (i===activeScenarioIdx?' active':'');
       btn.dataset.s = i;
-      btn.textContent = sc.name;
+      btn.innerHTML = `<span style="display:inline-flex;align-items:center;gap:4px;">
+        <i class="dot" style="background:${SCENARIO_COLORS[i]};width:8px;height:8px;"></i>${sc.name}</span>`;
       btn.addEventListener('click', () => switchNisaScenario(i));
+      // 削除ボタン（2つ以上のとき）
+      if (nisaScenarios.length > 1) {
+        const del = document.createElement('button');
+        del.className = 'cmp-del-btn';
+        del.textContent = '✕';
+        del.title = '削除';
+        del.addEventListener('click', e => {
+          e.stopPropagation();
+          saveScenarioFromForm();
+          nisaScenarios.splice(i, 1);
+          if (activeScenarioIdx >= nisaScenarios.length) activeScenarioIdx = nisaScenarios.length - 1;
+          renderNisaScenarioTabs();
+          loadScenarioToForm(getActiveScenario());
+          calcNisa();
+        });
+        btn.appendChild(del);
+      }
       bar.appendChild(btn);
     });
-    bar.appendChild(addBtn);
+    // シナリオ名フィールドをアクティブシナリオ名に同期
+    const inp = el('ns-name');
+    if (inp) inp.value = nisaScenarios[activeScenarioIdx].name;
   }
 
-  // NISA events
+  // ════════ シナリオ比較（Tab 1-3 共通） ════════
+  const CMP_COLORS = ['#2563eb','#f59e0b','#a855f7','#ef4444'];
+  const CMP_NAMES  = ['シナリオ1','シナリオ2','シナリオ3','シナリオ4'];
+
+  // compareState[tabId] = { on: bool, scenarios: [{label, params}], active: idx }
+  function makeCmpState(tabId, defaultParams) {
+    return { on: false, scenarios: [{label: CMP_NAMES[0], params: {...defaultParams}}], active: 0 };
+  }
+
+  const cmpState = {
+    t1: makeCmpState('t1', {monthly:2, rate:7, years:20, initial:0}),
+    t2: makeCmpState('t2', {principal:1000, rate:7, years:20}),
+    t3: makeCmpState('t3', {asset:2000, rate:4, amt:80, rRate:5, years:30, mode:'pct'}),
+  };
+
+  function getTabParams(tabId) {
+    if (tabId === 't1') return {
+      monthly: parseFloat(el('t1-monthly').value)||0,
+      rate:    parseFloat(el('t1-rate').value)||0,
+      years:   parseInt(el('t1-years').value)||0,
+      initial: parseFloat(el('t1-initial').value)||0,
+    };
+    if (tabId === 't2') return {
+      principal: parseFloat(el('t2-principal').value)||0,
+      rate:  parseFloat(el('t2-rate').value)||0,
+      years: parseInt(el('t2-years').value)||0,
+    };
+    if (tabId === 't3') return {
+      asset: parseFloat(el('t3-asset').value)||0,
+      rate:  parseFloat(el('t3-rate').value)||4,
+      amt:   parseFloat(el('t3-amt').value)||0,
+      rRate: parseFloat(el('t3-return').value)||0,
+      years: parseInt(el('t3-years').value)||30,
+      mode:  withdrawMode,
+    };
+  }
+
+  function simulateFromParams(tabId, params) {
+    if (tabId === 't1') {
+      const monthly = params.monthly * 10000;
+      const mr = params.rate / 100 / 12;
+      let bal = params.initial * 10000, prin = params.initial * 10000;
+      const pts = [{year:0, balance:bal, principal:prin}];
+      const rows = [];
+      for (let m = 1; m <= params.years*12; m++) {
+        bal = bal * (1+mr) + monthly;
+        prin += monthly;
+        if (m % 12 === 0) {
+          pts.push({year:m/12, balance:bal, principal:prin});
+          rows.push({year:m/12, annual:monthly*12, principal:prin, balance:bal, profit:bal-prin});
+        }
+      }
+      return {balance:bal, principal:prin, pts, rows};
+    }
+    if (tabId === 't2') {
+      const prin = params.principal * 10000;
+      let bal = prin;
+      const pts = [{year:0, balance:bal, principal:prin}];
+      const rows = [];
+      for (let y = 1; y <= params.years; y++) {
+        bal = bal * (1 + params.rate/100);
+        pts.push({year:y, balance:bal, principal:prin});
+        rows.push({year:y, balance:bal, principal:prin, profit:bal-prin, roi:prin?(bal-prin)/prin*100:0});
+      }
+      return {balance:bal, principal:prin, pts, rows};
+    }
+    if (tabId === 't3') {
+      const asset = params.asset * 10000;
+      const annualW = params.mode === 'pct' ? asset * params.rate / 100 : params.amt * 10000;
+      let bal = asset, totalW = 0;
+      const pts = [{year:0, balance:bal}];
+      const rows = [];
+      for (let y = 1; y <= params.years; y++) {
+        const gain = bal * params.rRate / 100;
+        const actualW = Math.min(annualW, bal + gain);
+        bal = Math.max(0, bal + gain - annualW);
+        totalW += actualW;
+        pts.push({year:y, balance:bal});
+        rows.push({year:y, annualW:actualW, totalW, balance:bal, gain});
+        if (bal === 0) break;
+      }
+      return {annualW, monthlyW:annualW/12, finalBal:bal, survived:bal>0, pts, rows};
+    }
+  }
+
+  function renderCompareChart(svgId, allScenarios, tabId, tt) {
+    const svg = el(svgId);
+    const W=900,H=380,pad={t:36,r:20,b:44,l:84};
+    const iW=W-pad.l-pad.r, iH=H-pad.t-pad.b;
+    const allPts = allScenarios.flatMap(sc => sc.pts);
+    const maxY = Math.max(...allPts.map(p=>p.balance??0), 1);
+    const {scaleY,ticks} = niceScale(maxY);
+    const maxX = Math.max(...allPts.map(p=>p.year), 1);
+    const pxFn = v => pad.l + v/maxX*iW;
+    const pyFn = v => pad.t + iH - v/scaleY*iH;
+    const barW = iW/maxX;
+
+    let yGrid = `<text x="${pad.l}" y="${pad.t-12}" fill="#aaa" font-size="11" font-family="sans-serif">万円</text>`;
+    ticks.forEach(v=>{
+      const yy=pyFn(v).toFixed(1);
+      yGrid+=`<line x1="${pad.l}" y1="${yy}" x2="${W-pad.r}" y2="${yy}" stroke="${v===0?'#ccc':'#e8eaef'}" stroke-width="${v===0?1.5:1}"/>`;
+      yGrid+=`<text x="${pad.l-8}" y="${+yy+4}" text-anchor="end" fill="#888" font-size="11" font-family="sans-serif">${fmtAxis(v)}</text>`;
+    });
+    const rawXStep=Math.max(1,Math.ceil(maxX/8));
+    let xGrid='';
+    for(let yr=0;yr<=maxX;yr+=rawXStep){
+      const xx=pxFn(yr).toFixed(1);
+      xGrid+=`<line x1="${xx}" y1="${pad.t}" x2="${xx}" y2="${H-pad.b}" stroke="#e8eaef"/>`;
+      xGrid+=`<text x="${xx}" y="${H-10}" text-anchor="middle" fill="#888" font-size="11" font-family="sans-serif">${yr}年後</text>`;
+    }
+
+    let paths='', dots='', hovers='';
+    allScenarios.forEach((sc,si)=>{
+      const color=sc.color;
+      const isActive = si === cmpState[tabId].active;
+      const d=sc.pts.map((p,i)=>`${i?'L':'M'} ${pxFn(p.year).toFixed(1)} ${pyFn(p.balance??0).toFixed(1)}`).join(' ');
+      paths+=`<path d="${d}" fill="none" stroke="${color}" stroke-width="${isActive?4:2.5}"
+        stroke-dasharray="${isActive?'none':'6 4'}" stroke-linecap="round" stroke-linejoin="round" opacity="${isActive?1:.65}"/>`;
+      sc.pts.filter(p=>p.year>0).forEach((p,i)=>{
+        dots+=`<circle class="cyd" data-si="${si}" data-i="${i}"
+          cx="${pxFn(p.year).toFixed(1)}" cy="${pyFn(p.balance??0).toFixed(1)}"
+          r="${isActive?5:4}" fill="${color}" stroke="white" stroke-width="2" style="cursor:pointer;transition:r .1s"/>`;
+      });
+    });
+    const maxYrs=Math.max(...allScenarios.map(s=>s.pts.length-1));
+    for(let y=1;y<=maxYrs;y++){
+      const cx=pxFn(y);
+      hovers+=`<rect class="cyh" data-y="${y}"
+        x="${(cx-barW/2).toFixed(1)}" y="${pad.t}" width="${barW.toFixed(1)}" height="${iH}"
+        fill="transparent" style="cursor:pointer"/>`;
+    }
+    svg.innerHTML=`<rect width="${W}" height="${H}" rx="12" fill="white"/>${yGrid}${xGrid}${paths}${dots}${hovers}`;
+
+    const cmpTT = tt;
+    svg.querySelectorAll('.cyh').forEach(rect=>{
+      const y=+rect.dataset.y;
+      rect.addEventListener('mouseenter',e=>{
+        svg.querySelectorAll(`.cyd[data-i="${y-1}"]`).forEach(d=>d.setAttribute('r','7'));
+        let html=`<div class="tt-title">経過 ${y}年</div>`;
+        allScenarios.forEach((sc,si)=>{
+          const p=sc.pts[y]; if(!p) return;
+          html+=`<div class="tt-row"><span class="tt-dot" style="background:${sc.color}"></span>
+            <span class="tt-label">${sc.label}</span>
+            <span class="tt-val" style="color:${sc.color}">${fmtYen(p.balance??0)}</span></div>`;
+        });
+        cmpTT.show(e,html);
+      });
+      rect.addEventListener('mousemove',e=>cmpTT.move(e));
+      rect.addEventListener('mouseleave',()=>{
+        svg.querySelectorAll('.cyd').forEach(d=>d.setAttribute('r',d.dataset.si==cmpState[tabId].active?'5':'4'));
+        cmpTT.hide();
+      });
+    });
+  }
+
+  function renderCompareLegend(legendId, allScenarios) {
+    el(legendId).innerHTML = allScenarios.map(sc =>
+      `<span><i class="dot" style="background:${sc.color}"></i>${sc.label}</span>`
+    ).join('');
+  }
+
+  function buildCmpScenarios(tabId) {
+    return cmpState[tabId].scenarios.map((sc, si) => ({
+      label: sc.label,
+      color: CMP_COLORS[si % CMP_COLORS.length],
+      pts: simulateFromParams(tabId, sc.params).pts,
+    }));
+  }
+
+  function syncActiveScenarioParams(tabId) {
+    // Update the active scenario's params from current form values
+    cmpState[tabId].scenarios[cmpState[tabId].active].params = getTabParams(tabId);
+  }
+
+  function renderCmpTabs(tabId) {
+    const state = cmpState[tabId];
+    const tabsEl = el(`${tabId}-cmp-tabs`);
+    tabsEl.innerHTML = '';
+    state.scenarios.forEach((sc, si) => {
+      const btn = document.createElement('button');
+      btn.className = 'cmp-stab' + (si===state.active?' active':'');
+      btn.innerHTML = `<span style="display:inline-flex;align-items:center;gap:4px;">
+        <i class="dot" style="background:${CMP_COLORS[si]};width:8px;height:8px;"></i>${sc.label}</span>`;
+      btn.addEventListener('click', () => {
+        syncActiveScenarioParams(tabId);
+        state.active = si;
+        loadCmpScenarioToForm(tabId, sc.params);
+        renderCmpTabs(tabId);
+        refreshTabWithCompare(tabId);
+      });
+      // Del button
+      if (state.scenarios.length > 1) {
+        const del = document.createElement('button');
+        del.className = 'cmp-del-btn';
+        del.textContent = '✕';
+        del.title = '削除';
+        del.addEventListener('click', e => {
+          e.stopPropagation();
+          state.scenarios.splice(si, 1);
+          if (state.active >= state.scenarios.length) state.active = state.scenarios.length - 1;
+          loadCmpScenarioToForm(tabId, state.scenarios[state.active].params);
+          renderCmpTabs(tabId);
+          refreshTabWithCompare(tabId);
+        });
+        btn.appendChild(del);
+      }
+      tabsEl.appendChild(btn);
+    });
+
+    // シナリオ名編集フィールド（アクティブシナリオのみ）
+    let nameRow = el(`${tabId}-cmp-name-row`);
+    if (!nameRow) {
+      nameRow = document.createElement('div');
+      nameRow.id = `${tabId}-cmp-name-row`;
+      nameRow.style.cssText = 'margin-top:10px;display:flex;align-items:center;gap:8px;';
+      nameRow.innerHTML = `<span style="font-size:12px;font-weight:700;color:var(--text2);white-space:nowrap;">シナリオ名</span>
+        <input type="text" id="${tabId}-cmp-name-inp" style="flex:1;border:1.5px solid var(--border);border-radius:8px;padding:5px 10px;font-size:13px;font-weight:700;color:var(--text);outline:none;background:white;" value="">`;
+      el(`${tabId}-panel-cmp-row`).appendChild(nameRow);
+      el(`${tabId}-cmp-name-inp`).addEventListener('input', function() {
+        state.scenarios[state.active].label = this.value || CMP_NAMES[state.active];
+        renderCmpTabs(tabId);
+        if (state.on) refreshTabWithCompare(tabId);
+      });
+      el(`${tabId}-cmp-name-inp`).addEventListener('focus', function() {
+        this.style.borderColor = 'var(--accent)';
+        this.style.boxShadow = '0 0 0 3px rgba(29,78,216,.13)';
+      });
+      el(`${tabId}-cmp-name-inp`).addEventListener('blur', function() {
+        this.style.borderColor = 'var(--border)';
+        this.style.boxShadow = '';
+      });
+    }
+    // 毎回アクティブシナリオ名で更新（renderのたびに再セット）
+    const inp = el(`${tabId}-cmp-name-inp`);
+    if (inp) inp.value = state.scenarios[state.active].label;
+  }
+
+  function loadCmpScenarioToForm(tabId, params) {
+    if (tabId === 't1') {
+      el('t1-monthly').value=params.monthly; el('t1-monthly-r').value=params.monthly; el('t1-monthly-r').dispatchEvent(new Event('input'));
+      el('t1-rate').value=params.rate;       el('t1-rate-r').value=params.rate;       el('t1-rate-r').dispatchEvent(new Event('input'));
+      el('t1-years').value=params.years;     el('t1-years-r').value=params.years;     el('t1-years-r').dispatchEvent(new Event('input'));
+      el('t1-initial').value=params.initial; el('t1-initial-r').value=params.initial; el('t1-initial-r').dispatchEvent(new Event('input'));
+    } else if (tabId === 't2') {
+      el('t2-principal').value=params.principal; el('t2-principal-r').value=params.principal; el('t2-principal-r').dispatchEvent(new Event('input'));
+      el('t2-rate').value=params.rate;           el('t2-rate-r').value=params.rate;           el('t2-rate-r').dispatchEvent(new Event('input'));
+      el('t2-years').value=params.years;         el('t2-years-r').value=params.years;         el('t2-years-r').dispatchEvent(new Event('input'));
+    } else if (tabId === 't3') {
+      el('t3-asset').value=params.asset;  el('t3-asset-r').value=params.asset;  el('t3-asset-r').dispatchEvent(new Event('input'));
+      el('t3-return').value=params.rRate; el('t3-return-r').value=params.rRate; el('t3-return-r').dispatchEvent(new Event('input'));
+      el('t3-years').value=params.years;  el('t3-years-r').value=params.years;  el('t3-years-r').dispatchEvent(new Event('input'));
+      if (params.mode==='pct') { el('t3-rate').value=params.rate; el('t3-rate-r').value=params.rate; el('t3-rate-r').dispatchEvent(new Event('input')); }
+      else { el('t3-amt').value=params.amt; el('t3-amt-r').value=params.amt; el('t3-amt-r').dispatchEvent(new Event('input')); }
+      setWithdrawMode(params.mode);
+    }
+  }
+
+  function refreshTabWithCompare(tabId) {
+    if (tabId === 't1') {
+      if (cmpState.t1.on) {
+        syncActiveScenarioParams('t1');
+        const all = buildCmpScenarios('t1');
+        renderCompareChart('chart1', all, 't1', tt1);
+        renderCompareLegend('t1-legend', all);
+        // stats from active scenario
+        const r = simulateFromParams('t1', cmpState.t1.scenarios[cmpState.t1.active].params);
+        el('t1-final').textContent=fmtYen(r.balance); el('t1-principal').textContent=fmtYen(r.principal);
+        const profit=r.balance-r.principal; el('t1-profit').textContent=fmtYen(profit); el('t1-profit').className='v '+(profit>=0?'v-positive':'v-negative');
+        el('t1-roi').textContent=fmtPct(r.principal?(profit/r.principal*100):0);
+        el('t1-table').innerHTML=r.rows.map(row=>`<tr><td>${row.year}年目</td><td>${fmtYen(row.annual)}</td><td>${fmtYen(row.principal)}</td><td style="color:#2563eb;font-weight:700">${fmtYen(row.balance)}</td><td style="color:${row.profit>=0?'#0ea472':'#dc2626'}">${fmtYen(row.profit)}</td></tr>`).join('');
+      } else { calc1(); }
+    } else if (tabId === 't2') {
+      if (cmpState.t2.on) {
+        syncActiveScenarioParams('t2');
+        const all = buildCmpScenarios('t2');
+        renderCompareChart('chart2', all, 't2', tt2);
+        renderCompareLegend('t2-legend', all);
+        const r = simulateFromParams('t2', cmpState.t2.scenarios[cmpState.t2.active].params);
+        el('t2-final').textContent=fmtYen(r.balance); el('t2-princ-disp').textContent=fmtYen(r.principal);
+        const profit=r.balance-r.principal; el('t2-profit').textContent=fmtYen(profit); el('t2-profit').className='v '+(profit>=0?'v-positive':'v-negative');
+        el('t2-roi').textContent=fmtPct(r.principal?(profit/r.principal*100):0);
+        el('t2-table').innerHTML=r.rows.map(row=>`<tr><td>${row.year}年目</td><td style="color:#2563eb;font-weight:700">${fmtYen(row.balance)}</td><td>${fmtYen(row.principal)}</td><td style="color:${row.profit>=0?'#0ea472':'#dc2626'}">${fmtYen(row.profit)}</td><td style="color:${row.profit>=0?'#0ea472':'#dc2626'}">${fmtPct(row.roi)}</td></tr>`).join('');
+      } else { calc2(); }
+    } else if (tabId === 't3') {
+      if (cmpState.t3.on) {
+        syncActiveScenarioParams('t3');
+        const all = buildCmpScenarios('t3');
+        renderCompareChart('chart3', all, 't3', tt3);
+        renderCompareLegend('t3-legend', all);
+        const r = simulateFromParams('t3', cmpState.t3.scenarios[cmpState.t3.active].params);
+        el('t3-annual').textContent=fmtYen(r.annualW); el('t3-monthly').textContent=fmtYen(r.monthlyW);
+        el('t3-final').textContent=fmtYen(r.finalBal); el('t3-final').className='v '+(r.finalBal>0?'v-positive':'v-negative');
+        el('t3-verdict').textContent=r.survived?'持続可能':'資産枯渇'; el('t3-verdict').className='v '+(r.survived?'v-positive':'v-negative');
+        el('t3-table').innerHTML=r.rows.map(row=>`<tr><td>${row.year}年目</td><td>${fmtYen(row.annualW)}</td><td>${fmtYen(row.totalW)}</td><td style="color:${row.balance>0?'#2563eb':'#dc2626'};font-weight:700">${fmtYen(row.balance)}</td><td style="color:#0ea472">${fmtYen(row.gain)}</td></tr>`).join('');
+      } else { calc3(); }
+    }
+  }
+
+  // Compare checkbox toggle
+  ['t1','t2','t3'].forEach(tabId => {
+    el(`${tabId}-cmp-on`).addEventListener('change', function() {
+      const state = cmpState[tabId];
+      state.on = this.checked;
+      el(`${tabId}-panel-cmp-row`).style.display = this.checked ? '' : 'none';
+      if (this.checked) {
+        // Save current form to active scenario
+        state.scenarios[state.active].params = getTabParams(tabId);
+        renderCmpTabs(tabId);
+        refreshTabWithCompare(tabId);
+      } else {
+        // Restore normal legend
+        if (tabId==='t1') { el('t1-legend').innerHTML='<span><i class="dot" style="background:#2563eb"></i>総資産</span><span><i class="dot" style="background:#0ea472"></i>投資元本</span>'; calc1(); }
+        if (tabId==='t2') { el('t2-legend').innerHTML='<span><i class="dot" style="background:#2563eb"></i>評価額</span><span><i class="dot" style="background:#0ea472"></i>元本</span>'; calc2(); }
+        if (tabId==='t3') { el('t3-legend').innerHTML='<span><i class="dot" style="background:#2563eb"></i>資産残高</span>'; calc3(); }
+      }
+    });
+    el(`${tabId}-cmp-add`).addEventListener('click', () => {
+      const state = cmpState[tabId];
+      if (state.scenarios.length >= 4) { alert('シナリオは最大4つまでです'); return; }
+      syncActiveScenarioParams(tabId);
+      const newIdx = state.scenarios.length;
+      state.scenarios.push({ label: CMP_NAMES[newIdx], params: {...getTabParams(tabId)} });
+      state.active = newIdx;
+      renderCmpTabs(tabId);
+      refreshTabWithCompare(tabId);
+    });
+  });
+
+  // Hook calc1/2/3 to also update compare if on
+  // Override auto callbacks to use compare-aware refresh
+  const auto1 = () => { if(el('t1-auto').checked) { if(cmpState.t1.on){syncActiveScenarioParams('t1');refreshTabWithCompare('t1');}else{calc1();} } };
+  const auto2 = () => { if(el('t2-auto').checked) { if(cmpState.t2.on){syncActiveScenarioParams('t2');refreshTabWithCompare('t2');}else{calc2();} } };
+  const auto3 = () => { if(el('t3-auto').checked) { if(cmpState.t3.on){syncActiveScenarioParams('t3');refreshTabWithCompare('t3');}else{calc3();} } };
+  ['t1-monthly','t1-rate','t1-years','t1-initial'].forEach(id => linkSlider(id, id+'-r', auto1));
+  ['t2-principal','t2-rate','t2-years'].forEach(id => linkSlider(id, id+'-r', auto2));
+  ['t3-asset','t3-rate','t3-amt','t3-return','t3-years'].forEach(id => linkSlider(id, id+'-r', auto3));
+  el('t1-calc').addEventListener('click', ()=>{ if(cmpState.t1.on){syncActiveScenarioParams('t1');refreshTabWithCompare('t1');}else{calc1();} });
+  el('t2-calc').addEventListener('click', ()=>{ if(cmpState.t2.on){syncActiveScenarioParams('t2');refreshTabWithCompare('t2');}else{calc2();} });
+  el('t3-calc').addEventListener('click', ()=>{ if(cmpState.t3.on){syncActiveScenarioParams('t3');refreshTabWithCompare('t3');}else{calc3();} });
+  el('t1-reset').addEventListener('click', reset1);
+  el('t2-reset').addEventListener('click', reset2);
+  el('t3-reset').addEventListener('click', reset3);
+  calc1(); calc2(); calc3();
   el('nisa-add-scenario').addEventListener('click', () => {
     if (nisaScenarios.length >= 4) { alert('シナリオは最大4つまでです'); return; }
     saveScenarioFromForm();
@@ -1534,6 +2054,19 @@
     activeScenarioIdx = idx;
     renderNisaScenarioTabs();
     loadScenarioToForm(getActiveScenario());
+    calcNisa();
+  });
+
+  el('nisa-cmp-on').addEventListener('change', function() {
+    el('nisa-cmp-body').style.display = this.checked ? '' : 'none';
+    if (!this.checked && nisaScenarios.length > 1) {
+      // 比較OFFのとき：アクティブシナリオだけ残す
+      nisaScenarios = [nisaScenarios[activeScenarioIdx]];
+      activeScenarioIdx = 0;
+      renderNisaScenarioTabs();
+      loadScenarioToForm(getActiveScenario());
+      calcNisa();
+    }
   });
 
   el('nisa-add-phase').addEventListener('click', addPhase);
@@ -1541,6 +2074,8 @@
   el('nisa-reset').addEventListener('click', () => {
     nisaScenarios = [makeDefaultScenario(0)];
     activeScenarioIdx = 0;
+    el('nisa-cmp-on').checked = false;
+    el('nisa-cmp-body').style.display = 'none';
     renderNisaScenarioTabs();
     loadScenarioToForm(getActiveScenario());
     calcNisa();
@@ -1551,9 +2086,10 @@
     renderNisaScenarioTabs();
   });
 
-  linkSlider('ns-rate',  'ns-rate-r',  updateNisaQuota);
-  linkSlider('ns-years', 'ns-years-r', updateNisaQuota);
-  linkSlider('ns-bonus', 'ns-bonus-r', updateNisaQuota);
+  const autoNisa = () => { if (el('ns-auto').checked) calcNisa(); };
+  linkSlider('ns-rate',  'ns-rate-r',  autoNisa);
+  linkSlider('ns-years', 'ns-years-r', autoNisa);
+  linkSlider('ns-bonus', 'ns-bonus-r', autoNisa);
 
   // Tooltip for NISA chart
   const tt4El = document.createElement('div');
