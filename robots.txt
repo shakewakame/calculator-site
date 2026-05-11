@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://shakewakame.github.io/calculator-site/sitemap.xml
