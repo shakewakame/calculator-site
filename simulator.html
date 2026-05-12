@@ -436,6 +436,32 @@
     }
     .panel-cmp-label input[type="checkbox"] { width:16px;height:16px;accent-color:var(--accent);cursor:pointer;flex-shrink:0; }
     .panel-cmp-row { display:flex; gap:6px; flex-wrap:wrap; align-items:center; margin-top:10px; }
+
+    /* ─── ①URLシェアボタン ─── */
+    .btn-share { border:1.5px solid var(--border);border-radius:11px;padding:11px 14px;font-size:13px;font-weight:700;cursor:pointer;background:var(--surface2);color:var(--text2);transition:all .15s;display:inline-flex;align-items:center;gap:6px; }
+    .btn-share:hover { border-color:var(--accent);color:var(--accent);transform:translateY(-1px); }
+    .btn-share.copied { background:var(--accent2-light);border-color:var(--accent2);color:var(--accent2); }
+    /* ─── ②NISA税メリット ─── */
+    .tax-card { background:var(--accent2-light);border:1.5px solid #6ee7b7;border-radius:12px;padding:14px 18px;margin-top:12px; }
+    .tax-card-title { font-size:12px;font-weight:800;color:var(--accent2);margin-bottom:8px;letter-spacing:.04em;text-transform:uppercase; }
+    .tax-stats { display:grid;grid-template-columns:repeat(3,1fr);gap:10px; }
+    .tax-stat .k { font-size:11px;font-weight:700;color:var(--muted);margin-bottom:3px; }
+    .tax-stat .v { font-size:15px;font-weight:800;color:var(--text);word-break:break-all; }
+    /* ─── ④インフレ調整 ─── */
+    .real-badge { display:inline-block;background:#fef9c3;border:1px solid #fde047;border-radius:6px;padding:2px 8px;font-size:12px;font-weight:700;color:#713f12; }
+    .inf-note { margin-top:8px;padding:10px 14px;background:#fffbeb;border:1.5px solid #fde047;border-radius:10px;font-size:13px;color:var(--text2);line-height:1.8; }
+    /* ─── ③FIRE逆算 ─── */
+    .fire-hero { background:linear-gradient(135deg,#1d4ed8,#3b82f6);color:white;border-radius:var(--radius);padding:28px;text-align:center;box-shadow:var(--shadow);margin-bottom:16px; }
+    .fire-hero .fh-label { font-size:12px;opacity:.8;margin-bottom:8px;font-weight:700;letter-spacing:.06em;text-transform:uppercase; }
+    .fire-hero .fh-val { font-size:48px;font-weight:900;letter-spacing:-0.04em;line-height:1.1; }
+    .fire-hero .fh-unit { font-size:16px;font-weight:700;opacity:.85;margin-left:2px; }
+    .fire-hero .fh-sub { font-size:13px;opacity:.75;margin-top:10px;line-height:1.7; }
+    .fire-milestones { display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:16px; }
+    .fire-ms { background:var(--surface);border:1.5px solid var(--border);border-radius:12px;padding:16px 18px; }
+    .fire-ms .mk { font-size:11px;font-weight:700;color:var(--muted);margin-bottom:4px;letter-spacing:.04em;text-transform:uppercase; }
+    .fire-ms .mv { font-size:18px;font-weight:800;color:var(--text);word-break:break-all; }
+    .fire-impossible { background:var(--danger-light);border:1.5px solid var(--danger);color:var(--danger);border-radius:12px;padding:20px;text-align:center;font-size:15px;font-weight:700;line-height:1.8;margin-bottom:16px; }
+    @media(max-width:640px){ .tax-stats{grid-template-columns:1fr 1fr;} .fire-milestones{grid-template-columns:1fr 1fr;} }
 </style>
 </head>
 <body>
@@ -471,6 +497,7 @@
     <button class="tab-btn" data-tab="tab2">一括投資</button>
     <button class="tab-btn" data-tab="tab3">資産取り崩し</button>
     <button class="tab-btn" data-tab="tab4">新NISAシミュレーター</button>
+    <button class="tab-btn" data-tab="tab5">🔥 FIRE逆算</button>
   </div>
 
   <!-- ═══════ TAB 1: 積立 ═══════ -->
@@ -527,10 +554,21 @@
               <div class="range-labels"><span>0万</span><span>1億円</span></div>
             </div>
           </label>
+          <label>インフレ率（実質資産の試算）
+            <div class="input-slider-wrap">
+              <div class="input-row">
+                <input class="num-input" id="t1-inf" type="number" min="0" max="10" step="0.1" value="2">
+                <span class="unit-label">%</span>
+              </div>
+              <input type="range" id="t1-inf-r" min="0" max="10" step="0.1" value="2">
+              <div class="range-labels"><span>0%</span><span>10%</span></div>
+            </div>
+          </label>
           <div class="divider"></div>
           <div class="actions form-full">
             <button class="btn-primary" id="t1-calc">計算する</button>
             <button class="btn-secondary" id="t1-reset">初期値に戻す</button>
+            <button class="btn-share" type="button" id="t1-share">🔗 URLをシェア</button>
             <label class="auto-calc-wrap">
               <input type="checkbox" id="t1-auto">自動で再計算
             </label>
@@ -552,6 +590,16 @@
             <div class="stat"><div class="k">利益率</div><div class="v" id="t1-roi">-</div></div>
           </div>
         </div>
+        <!-- ②税メリット + ④インフレ -->
+        <div class="tax-card" id="t1-tax-card" style="display:none">
+          <div class="tax-card-title">💰 NISA vs 課税口座 — 節税効果の試算（税率20.315%）</div>
+          <div class="tax-stats">
+            <div class="tax-stat"><div class="k">NISA 手取り評価額</div><div class="v v-accent" id="t1-nisa-hand">-</div></div>
+            <div class="tax-stat"><div class="k">課税口座 手取り評価額</div><div class="v" id="t1-tax-hand">-</div></div>
+            <div class="tax-stat"><div class="k">節税メリット</div><div class="v v-positive" id="t1-tax-bene">-</div></div>
+          </div>
+        </div>
+        <div class="inf-note" id="t1-inf-note" style="display:none"></div>
         <section class="card chart-card">
           <div class="chart-title">資産推移グラフ</div>
           <div class="chart-sub" id="t1-chart-sub">青が評価額、緑が投資元本です。</div>
@@ -619,10 +667,21 @@
               <div class="range-labels"><span>1年</span><span>60年</span></div>
             </div>
           </label>
+          <label>インフレ率（実質資産の試算）
+            <div class="input-slider-wrap">
+              <div class="input-row">
+                <input class="num-input" id="t2-inf" type="number" min="0" max="10" step="0.1" value="2">
+                <span class="unit-label">%</span>
+              </div>
+              <input type="range" id="t2-inf-r" min="0" max="10" step="0.1" value="2">
+              <div class="range-labels"><span>0%</span><span>10%</span></div>
+            </div>
+          </label>
           <div class="divider"></div>
           <div class="actions form-full">
             <button class="btn-primary" id="t2-calc">計算する</button>
             <button class="btn-secondary" id="t2-reset">初期値に戻す</button>
+            <button class="btn-share" type="button" id="t2-share">🔗 URLをシェア</button>
             <label class="auto-calc-wrap">
               <input type="checkbox" id="t2-auto">自動で再計算
             </label>
@@ -644,6 +703,16 @@
             <div class="stat"><div class="k">利益率</div><div class="v" id="t2-roi">-</div></div>
           </div>
         </div>
+        <!-- ②税メリット + ④インフレ -->
+        <div class="tax-card" id="t2-tax-card" style="display:none">
+          <div class="tax-card-title">💰 NISA vs 課税口座 — 節税効果の試算（税率20.315%）</div>
+          <div class="tax-stats">
+            <div class="tax-stat"><div class="k">NISA 手取り評価額</div><div class="v v-accent" id="t2-nisa-hand">-</div></div>
+            <div class="tax-stat"><div class="k">課税口座 手取り評価額</div><div class="v" id="t2-tax-hand">-</div></div>
+            <div class="tax-stat"><div class="k">節税メリット</div><div class="v v-positive" id="t2-tax-bene">-</div></div>
+          </div>
+        </div>
+        <div class="inf-note" id="t2-inf-note" style="display:none"></div>
         <section class="card chart-card">
           <div class="chart-title">資産推移グラフ</div>
           <div class="chart-sub" id="t2-chart-sub">青が評価額、緑が元本（一定）です。</div>
@@ -746,6 +815,7 @@
           <div class="actions form-full">
             <button class="btn-primary" id="t3-calc">計算する</button>
             <button class="btn-secondary" id="t3-reset">初期値に戻す</button>
+            <button class="btn-share" type="button" id="t3-share">🔗 URLをシェア</button>
             <label class="auto-calc-wrap">
               <input type="checkbox" id="t3-auto">自動で再計算
             </label>
@@ -962,6 +1032,88 @@
       </div><!-- /right -->
     </div>
   </div><!-- /tab4 -->
+
+  <!-- ═══════ TAB 5: FIRE逆算 ═══════ -->
+  <div id="tab5" class="tab-panel">
+    <main class="grid">
+      <section class="card panel">
+        <div class="panel-title">🔥 FIRE逆算条件を入力</div>
+        <div class="form-grid">
+          <label>月の生活費（FIRE後）
+            <div class="input-slider-wrap">
+              <div class="input-row">
+                <input class="num-input" id="f5-living" type="number" min="1" max="100" step="1" value="25">
+                <span class="unit-label">万円/月</span>
+              </div>
+              <input type="range" id="f5-living-r" min="1" max="100" step="1" value="25">
+              <div class="range-labels"><span>1万</span><span>100万</span></div>
+            </div>
+          </label>
+          <label>現在の保有資産
+            <div class="input-slider-wrap">
+              <div class="input-row">
+                <input class="num-input" id="f5-current" type="number" min="0" max="30000" step="50" value="0">
+                <span class="unit-label">万円</span>
+              </div>
+              <input type="range" id="f5-current-r" min="0" max="30000" step="50" value="0">
+              <div class="range-labels"><span>0万</span><span>3億円</span></div>
+            </div>
+          </label>
+          <label>毎月の積立額
+            <div class="input-slider-wrap">
+              <div class="input-row">
+                <input class="num-input" id="f5-monthly" type="number" min="0" max="100" step="0.5" value="5">
+                <span class="unit-label">万円</span>
+              </div>
+              <input type="range" id="f5-monthly-r" min="0" max="100" step="0.5" value="5">
+              <div class="range-labels"><span>0万</span><span>100万</span></div>
+            </div>
+          </label>
+          <label>想定年利
+            <div class="input-slider-wrap">
+              <div class="input-row">
+                <input class="num-input" id="f5-rate" type="number" min="0" max="20" step="0.1" value="5">
+                <span class="unit-label">%</span>
+              </div>
+              <input type="range" id="f5-rate-r" min="0" max="20" step="0.1" value="5">
+              <div class="range-labels"><span>0%</span><span>20%</span></div>
+            </div>
+          </label>
+          <label>現在の年齢（任意）
+            <div class="input-slider-wrap">
+              <div class="input-row">
+                <input class="num-input" id="f5-age" type="number" min="18" max="80" step="1" value="30">
+                <span class="unit-label">歳</span>
+              </div>
+              <input type="range" id="f5-age-r" min="18" max="80" step="1" value="30">
+              <div class="range-labels"><span>18歳</span><span>80歳</span></div>
+            </div>
+          </label>
+          <div class="divider"></div>
+          <div class="actions form-full">
+            <button class="btn-primary" id="f5-calc">計算する</button>
+            <button class="btn-secondary" id="f5-reset">初期値に戻す</button>
+            <label class="auto-calc-wrap">
+              <input type="checkbox" id="f5-auto">自動で再計算
+            </label>
+            <button class="btn-share" type="button" id="f5-share">🔗 URLをシェア</button>
+          </div>
+        </div>
+        <div class="note">
+          <strong>4%ルールに基づく計算</strong><br>
+          FIRE必要資産 ＝ 年間生活費 × 25倍。月次複利で資産が目標額に達した月を検出します。<br>
+          税金・手数料・インフレは考慮していません。
+        </div>
+      </section>
+      <section class="right" id="f5-result-area">
+        <div style="text-align:center;color:var(--muted);padding:60px 20px 40px;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);">
+          <div style="font-size:36px;margin-bottom:14px;">🔥</div>
+          <div style="font-size:16px;font-weight:700;color:var(--text);">条件を入力して「計算する」を押してください</div>
+          <div style="font-size:13px;margin-top:8px;">FIRE達成までの期間と資産推移グラフが表示されます</div>
+        </div>
+      </section>
+    </main>
+  </div><!-- /tab5 -->
 
 </div>
 
@@ -1291,6 +1443,8 @@
       <td style="color:#2563eb;font-weight:700">${fmtYen(row.balance)}</td>
       <td style="color:${row.profit>=0?'#0ea472':'#dc2626'}">${fmtYen(row.profit)}</td>
     </tr>`).join('');
+    updateTaxBenefit('t1', r.principal, r.balance);
+    updateInflation('t1', r.balance, r.principal, parseInt(el('t1-years').value)||0);
   }
   const def1 = {'t1-monthly':2,'t1-rate':7,'t1-years':20,'t1-initial':0};
   function reset1() {
@@ -1331,6 +1485,8 @@
       <td style="color:${row.profit>=0?'#0ea472':'#dc2626'}">${fmtYen(row.profit)}</td>
       <td style="color:${row.profit>=0?'#0ea472':'#dc2626'}">${fmtPct(row.roi)}</td>
     </tr>`).join('');
+    updateTaxBenefit('t2', r.principal, r.balance);
+    updateInflation('t2', r.balance, r.principal, parseInt(el('t2-years').value)||0);
   }
   const def2 = {'t2-principal':1000,'t2-rate':7,'t2-years':20};
   function reset2() {
@@ -2337,6 +2493,274 @@
   <p>最終更新日：<time datetime="2026-05-11">2026年5月11日</time></p>
 </footer>
 
+<script>
+// ════════════════════════════════════════════════════════════════
+// 追加機能: ①URLシェア  ②NISA税メリット  ③FIRE逆算  ④インフレ調整
+// ════════════════════════════════════════════════════════════════
+
+// ─── ① URL シェア ─────────────────────────────────────────────
+function copyShareURL(tabId) {
+  const p = new URLSearchParams();
+  if (tabId === 't1') {
+    p.set('tab','tab1'); p.set('m',el('t1-monthly').value); p.set('r',el('t1-rate').value);
+    p.set('y',el('t1-years').value); p.set('i',el('t1-initial').value);
+    if (el('t1-inf')) p.set('inf',el('t1-inf').value);
+  } else if (tabId === 't2') {
+    p.set('tab','tab2'); p.set('p',el('t2-principal').value);
+    p.set('r',el('t2-rate').value); p.set('y',el('t2-years').value);
+    if (el('t2-inf')) p.set('inf',el('t2-inf').value);
+  } else if (tabId === 't3') {
+    p.set('tab','tab3'); p.set('a',el('t3-asset').value); p.set('rr',el('t3-return').value);
+    p.set('y',el('t3-years').value); p.set('mode',withdrawMode);
+    if (withdrawMode==='pct') p.set('r',el('t3-rate').value);
+    else p.set('am',el('t3-amt').value);
+  } else if (tabId === 'f5') {
+    p.set('tab','tab5'); p.set('lv',el('f5-living').value); p.set('ca',el('f5-current').value);
+    p.set('ms',el('f5-monthly').value); p.set('r',el('f5-rate').value); p.set('age',el('f5-age').value);
+  }
+  const url = location.origin + location.pathname + '?' + p.toString();
+  const btnId = tabId==='f5' ? 'f5-share' : tabId+'-share';
+  const btn = el(btnId);
+  const feedback = () => {
+    if (!btn) return;
+    const orig = btn.innerHTML;
+    btn.innerHTML = '✅ コピーしました'; btn.classList.add('copied');
+    setTimeout(() => { btn.innerHTML = orig; btn.classList.remove('copied'); }, 2500);
+  };
+  const fallback = () => {
+    const ta = document.createElement('textarea');
+    ta.value = url; ta.style.cssText = 'position:fixed;opacity:0';
+    document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove();
+  };
+  if (navigator.clipboard) navigator.clipboard.writeText(url).then(feedback).catch(() => { fallback(); feedback(); });
+  else { fallback(); feedback(); }
+}
+
+function loadFromURL() {
+  const p = new URLSearchParams(location.search);
+  const tab = p.get('tab');
+  if (!tab) return;
+  document.querySelectorAll('.tab-btn').forEach(b => { if (b.dataset.tab===tab) b.click(); });
+  function sv(id, val) {
+    if (val==null) return;
+    const n=el(id), r=el(id+'-r');
+    if (n) { n.value=val; n.dispatchEvent(new Event('input',{bubbles:true})); }
+    if (r) { r.value=val; r.dispatchEvent(new Event('input')); }
+  }
+  if (tab==='tab1') {
+    sv('t1-monthly',p.get('m')); sv('t1-rate',p.get('r'));
+    sv('t1-years',p.get('y')); sv('t1-initial',p.get('i'));
+    if (p.get('inf')) sv('t1-inf',p.get('inf'));
+    calc1();
+  } else if (tab==='tab2') {
+    sv('t2-principal',p.get('p')); sv('t2-rate',p.get('r')); sv('t2-years',p.get('y'));
+    if (p.get('inf')) sv('t2-inf',p.get('inf'));
+    calc2();
+  } else if (tab==='tab3') {
+    sv('t3-asset',p.get('a')); sv('t3-return',p.get('rr')); sv('t3-years',p.get('y'));
+    if (p.get('mode')) setWithdrawMode(p.get('mode'));
+    sv('t3-rate',p.get('r')); sv('t3-amt',p.get('am'));
+    calc3();
+  } else if (tab==='tab5') {
+    sv('f5-living',p.get('lv')); sv('f5-current',p.get('ca'));
+    sv('f5-monthly',p.get('ms')); sv('f5-rate',p.get('r')); sv('f5-age',p.get('age'));
+    setTimeout(calcFire, 80);
+  }
+}
+
+el('t1-share')?.addEventListener('click', () => copyShareURL('t1'));
+el('t2-share')?.addEventListener('click', () => copyShareURL('t2'));
+el('t3-share')?.addEventListener('click', () => copyShareURL('t3'));
+el('f5-share')?.addEventListener('click', () => copyShareURL('f5'));
+
+// ─── ② NISA vs 課税口座 税メリット ───────────────────────────
+const TAX_JP = 0.20315;
+
+function updateTaxBenefit(tabId, principal, balance) {
+  const card = el(tabId+'-tax-card');
+  if (!card) return;
+  const profit = balance - principal;
+  if (profit <= 0) { card.style.display='none'; return; }
+  const taxHand  = principal + profit * (1 - TAX_JP);
+  const benefit  = balance - taxHand;
+  card.style.display = '';
+  el(tabId+'-nisa-hand').textContent = fmtYen(balance);
+  el(tabId+'-tax-hand').textContent  = fmtYen(taxHand);
+  el(tabId+'-tax-bene').textContent  = '+' + fmtYen(benefit);
+}
+
+// ─── ④ インフレ調整（実質資産） ──────────────────────────────
+function updateInflation(tabId, nomBal, principal, years) {
+  const infEl  = el(tabId+'-inf');
+  const noteEl = el(tabId+'-inf-note');
+  if (!infEl || !noteEl) return;
+  const inf = parseFloat(infEl.value) || 0;
+  if (inf <= 0) { noteEl.style.display='none'; return; }
+  const realBal    = nomBal / Math.pow(1 + inf/100, years);
+  const realProfit = realBal - principal;
+  noteEl.innerHTML = `<span class="real-badge">実質評価額（インフレ率 ${inf}% 調整後）</span>　${fmtYen(realBal)}　／　実質運用益　${fmtYen(realProfit)}`;
+  noteEl.style.display = '';
+}
+
+linkSlider('t1-inf','t1-inf-r', () => {
+  const r = simulate1();
+  updateInflation('t1', r.balance, r.principal, parseInt(el('t1-years').value)||0);
+  if (el('t1-auto')?.checked) calc1();
+});
+linkSlider('t2-inf','t2-inf-r', () => {
+  const r = simulate2();
+  updateInflation('t2', r.balance, r.principal, parseInt(el('t2-years').value)||0);
+  if (el('t2-auto')?.checked) calc2();
+});
+
+// ─── ③ FIRE 逆算 ────────────────────────────────────────────
+function simulateFire() {
+  const livingM  = (parseFloat(el('f5-living').value)  ||0) * 10000;
+  const curAsset = (parseFloat(el('f5-current').value) ||0) * 10000;
+  const monthlyC = (parseFloat(el('f5-monthly').value) ||0) * 10000;
+  const rate     =  parseFloat(el('f5-rate').value)    ||0;
+  const age      =  parseInt(el('f5-age').value)       ||30;
+  const mr       = rate / 100 / 12;
+  const annualLiving = livingM * 12;
+  const fireTarget   = annualLiving * 25;
+  if (fireTarget <= 0) return null;
+
+  let bal = curAsset, principal = curAsset;
+  const pts = [{year:0, balance:bal/10000, principal:principal/10000}];
+  let fireMonth = null;
+  for (let m = 1; m <= 720; m++) {
+    bal = bal * (1 + mr) + monthlyC;
+    principal += monthlyC;
+    if (m % 12 === 0) pts.push({year:m/12, balance:bal/10000, principal:principal/10000});
+    if (fireMonth===null && bal>=fireTarget) fireMonth = m;
+  }
+  const fy = fireMonth!==null ? Math.floor(fireMonth/12) : null;
+  const fm = fireMonth!==null ? fireMonth%12 : null;
+  return { fireTarget, annualLiving, bal, principal, pts,
+    fireMonth, fy, fm, achieved: fireMonth!==null,
+    fireAge: fireMonth!==null ? age + fireMonth/12 : null };
+}
+
+function calcFire() {
+  const r = simulateFire();
+  const area = el('f5-result-area');
+  if (!r) return;
+
+  if (!r.achieved) {
+    area.innerHTML = `
+      <div class="fire-impossible">⚠️ 現在の条件では60年以内のFIRE達成が難しい見込みです。<br>積立額・年利を増やすか、生活費の削減を検討してください。</div>
+      <section class="card chart-card">
+        <div class="chart-title">資産推移グラフ（60年）</div>
+        <div class="chart-sub">赤点線がFIRE目標額（${fmtYen(r.fireTarget)}）です。</div>
+        <div class="chart-wrap"><svg id="chart5" viewBox="0 0 900 380"></svg></div>
+        <div class="legend">
+          <span><i class="dot" style="background:#2563eb"></i>評価額</span>
+          <span><i class="dot" style="background:#059669"></i>投資元本</span>
+          <span><i class="dot" style="background:#ef4444"></i>FIRE目標</span>
+        </div>
+      </section>`;
+  } else {
+    const yearsStr  = r.fy > 0 ? `${r.fy}年` : '';
+    const monthsStr = r.fm > 0 ? `${r.fm}ヶ月` : (r.fy===0 ? `${r.fireMonth}ヶ月` : '');
+    const ageLabel  = r.fireAge ? `約${Math.floor(r.fireAge)}歳でFIRE達成見込み` : '';
+    area.innerHTML = `
+      <div class="fire-hero">
+        <div class="fh-label">🔥 FIRE達成まであと</div>
+        <div><span class="fh-val">${yearsStr||'1年未満'}</span>${monthsStr?`<span class="fh-unit">${monthsStr}</span>`:''}</div>
+        <div class="fh-sub">${ageLabel}${ageLabel?'　／　':''}必要資産 ${fmtYen(r.fireTarget)}</div>
+      </div>
+      <div class="fire-milestones">
+        <div class="fire-ms"><div class="mk">FIRE必要資産（25倍）</div><div class="mv">${fmtYen(r.fireTarget)}</div></div>
+        <div class="fire-ms"><div class="mk">年間生活費</div><div class="mv">${fmtYen(r.annualLiving)}</div></div>
+        <div class="fire-ms"><div class="mk">月間取り崩し可能額</div><div class="mv">${fmtYen(r.fireTarget*0.04/12)}</div></div>
+      </div>
+      <section class="card chart-card">
+        <div class="chart-title">FIRE達成までの資産推移</div>
+        <div class="chart-sub">赤点線がFIRE目標額（${fmtYen(r.fireTarget)}）、🔥が達成ポイントです。</div>
+        <div class="chart-wrap"><svg id="chart5" viewBox="0 0 900 380"></svg></div>
+        <div class="legend">
+          <span><i class="dot" style="background:#2563eb"></i>評価額</span>
+          <span><i class="dot" style="background:#059669"></i>投資元本</span>
+          <span><i class="dot" style="background:#ef4444"></i>FIRE目標</span>
+        </div>
+      </section>`;
+  }
+  requestAnimationFrame(() => renderFireChart(r));
+}
+
+function renderFireChart(r) {
+  const svg = el('chart5');
+  if (!svg) return;
+  const W=900, H=380, pad={t:36,r:20,b:44,l:84};
+  const iW=W-pad.l-pad.r, iH=H-pad.t-pad.b;
+  const limit = r.fy!==null ? Math.min(r.fy+3, 60) : 60;
+  const pts = r.pts.filter(p => p.year<=limit);
+  if (!pts.length) return;
+  const tgtM = r.fireTarget/10000;
+  const maxY = Math.max(...pts.map(p=>p.balance), tgtM*1.1, 1);
+  const {scaleY, ticks} = niceScale(maxY);
+  const maxX = Math.max(...pts.map(p=>p.year), 1);
+  const pxF = v => pad.l + v/maxX*iW;
+  const pyF = v => pad.t + iH - Math.min(v,scaleY)/scaleY*iH;
+
+  let yGrid=`<text x="${pad.l}" y="${pad.t-12}" text-anchor="start" fill="#aaa" font-size="11" font-family="sans-serif">万円</text>`;
+  ticks.forEach(v => {
+    const yy=pyF(v).toFixed(1);
+    yGrid+=`<line x1="${pad.l}" y1="${yy}" x2="${W-pad.r}" y2="${yy}" stroke="${v===0?'#ccc':'#e8eaef'}" stroke-width="${v===0?1.5:1}"/>`;
+    yGrid+=`<text x="${pad.l-8}" y="${+yy+4}" text-anchor="end" fill="#888" font-size="11" font-family="sans-serif">${fmtAxis(v)}</text>`;
+  });
+  const xStep=Math.max(1,Math.ceil(maxX/6));
+  let xGrid='';
+  for (let yr=0; yr<=maxX; yr+=xStep) {
+    const xx=pxF(yr).toFixed(1);
+    xGrid+=`<line x1="${xx}" y1="${pad.t}" x2="${xx}" y2="${H-pad.b}" stroke="#e8eaef"/>`;
+    xGrid+=`<text x="${xx}" y="${H-10}" text-anchor="middle" fill="#888" font-size="11" font-family="sans-serif">${yr}年後</text>`;
+  }
+  const bw=Math.max(2, iW/maxX*0.65);
+  let bars='';
+  pts.filter(p=>p.year>0).forEach(p => {
+    const bx=pxF(p.year)-bw/2;
+    const ph=Math.max(0,Math.min(p.principal,scaleY)/scaleY*iH);
+    const eh=Math.max(0,Math.min(Math.max(0,p.balance-p.principal),scaleY-Math.min(p.principal,scaleY))/scaleY*iH);
+    bars+=`<rect x="${bx.toFixed(1)}" y="${pyF(p.principal).toFixed(1)}" width="${bw.toFixed(1)}" height="${ph.toFixed(1)}" fill="#059669" opacity="0.2" rx="2"/>`;
+    if (eh>0) bars+=`<rect x="${bx.toFixed(1)}" y="${pyF(p.balance).toFixed(1)}" width="${bw.toFixed(1)}" height="${eh.toFixed(1)}" fill="#2563eb" opacity="0.2" rx="2"/>`;
+  });
+  const balD=pts.map((p,i)=>`${i?'L':'M'} ${pxF(p.year).toFixed(1)} ${pyF(p.balance).toFixed(1)}`).join(' ');
+  const prnD=pts.map((p,i)=>`${i?'L':'M'} ${pxF(p.year).toFixed(1)} ${pyF(p.principal).toFixed(1)}`).join(' ');
+  const ty=pyF(tgtM).toFixed(1);
+  const fireLine=`<line x1="${pad.l}" y1="${ty}" x2="${W-pad.r}" y2="${ty}" stroke="#ef4444" stroke-width="2" stroke-dasharray="8 4"/>
+    <text x="${W-pad.r-4}" y="${+ty-5}" text-anchor="end" fill="#ef4444" font-size="11" font-family="sans-serif" font-weight="bold">FIRE目標</text>`;
+  let marker='';
+  if (r.achieved && r.fy!==null) {
+    const mx=pxF(r.fy+(r.fm||0)/12).toFixed(1);
+    marker=`<circle cx="${mx}" cy="${ty}" r="9" fill="#ef4444" opacity="0.15"/>
+      <circle cx="${mx}" cy="${ty}" r="5" fill="#ef4444" stroke="white" stroke-width="2"/>
+      <text x="${+mx+12}" y="${+ty+4}" fill="#ef4444" font-size="11" font-family="sans-serif" font-weight="bold">🔥FIRE!</text>`;
+  }
+  svg.innerHTML=`<rect width="${W}" height="${H}" rx="12" fill="white"/>
+    ${yGrid}${xGrid}${fireLine}${bars}
+    <path d="${prnD}" fill="none" stroke="#059669" stroke-width="2.5" stroke-dasharray="6 4" stroke-linecap="round"/>
+    <path d="${balD}" fill="none" stroke="#2563eb" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+    ${marker}`;
+}
+
+// FIRE tab events
+el('f5-calc')?.addEventListener('click', calcFire);
+el('f5-reset')?.addEventListener('click', () => {
+  const defs={'f5-living':25,'f5-current':0,'f5-monthly':5,'f5-rate':5,'f5-age':30};
+  Object.entries(defs).forEach(([id,v]) => {
+    const n=el(id), r=el(id+'-r');
+    if(n){n.value=v; n.dispatchEvent(new Event('input',{bubbles:true}));}
+    if(r){r.value=v; r.dispatchEvent(new Event('input'));}
+  });
+  el('f5-result-area').innerHTML=`<div style="text-align:center;color:var(--muted);padding:60px 20px 40px;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);"><div style="font-size:36px;margin-bottom:14px;">🔥</div><div style="font-size:16px;font-weight:700;color:var(--text);">条件を入力して「計算する」を押してください</div></div>`;
+});
+const autoFire=()=>{ if(el('f5-auto')?.checked) calcFire(); };
+['f5-living','f5-current','f5-monthly','f5-rate','f5-age'].forEach(id=>linkSlider(id,id+'-r',autoFire));
+
+// URL読み込み（ページ表示時）
+loadFromURL();
+</script>
 <script defer src="https://static.cloudflareinsights.com/beacon.min.js/v8c78df7c7c0f484497ecbca7046644da1771523124516" integrity="sha512-8DS7rgIrAmghBFwoOTujcf6D9rXvH8xm8JQ1Ja01h9QX8EzXldiszufYa4IFfKdLUKTTrnSFXLDkUEOTrZQ8Qg==" data-cf-beacon='{"version":"2024.11.0","token":"4edd5f8ec12a48cfa682ab8261b80a79","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
 </body>
 </html>
