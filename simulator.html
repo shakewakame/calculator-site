@@ -12,9 +12,9 @@
   <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
   <meta name="googlebot" content="index, follow">
   <meta name="format-detection" content="telephone=no">
-  <link rel="canonical" href="https://shakewakame.github.io/calculator-site/">
-  <link rel="alternate" hreflang="ja" href="https://shakewakame.github.io/calculator-site/">
-  <link rel="alternate" hreflang="x-default" href="https://shakewakame.github.io/calculator-site/">
+  <link rel="canonical" href="https://guileless-beignet-331a2a.netlify.app/">
+  <link rel="alternate" hreflang="ja" href="https://guileless-beignet-331a2a.netlify.app/">
+  <link rel="alternate" hreflang="x-default" href="https://guileless-beignet-331a2a.netlify.app/">
 
   <!-- ═══ パフォーマンス最適化 ═══ -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -24,10 +24,10 @@
   <meta property="og:type" content="website">
   <meta property="og:title" content="新NISAシミュレーター｜積立・一括・取り崩しを無料で試算＆シナリオ比較">
   <meta property="og:description" content="新NISAの積立・一括・取り崩しを無料でシミュレーション。複数シナリオを比較しながら将来の予想評価額を試算できます。FIRE達成までの資産推移もグラフで見える化。">
-  <meta property="og:url" content="https://shakewakame.github.io/calculator-site/">
+  <meta property="og:url" content="https://guileless-beignet-331a2a.netlify.app/">
   <meta property="og:site_name" content="新NISAシミュレーター">
   <meta property="og:locale" content="ja_JP">
-  <meta property="og:image" content="https://shakewakame.github.io/calculator-site/ogp.png">
+  <meta property="og:image" content="https://guileless-beignet-331a2a.netlify.app/ogp.png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
   <meta property="og:image:alt" content="新NISAシミュレーターのトップ画面">
@@ -36,7 +36,7 @@
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="新NISAシミュレーター｜積立・一括・取り崩しを無料で試算">
   <meta name="twitter:description" content="月額・年利・運用年数を設定して、新NISAの将来資産を無料でシミュレーション。複数シナリオの比較も可能。">
-  <meta name="twitter:image" content="https://shakewakame.github.io/calculator-site/ogp.png">
+  <meta name="twitter:image" content="https://guileless-beignet-331a2a.netlify.app/ogp.png">
   <meta name="twitter:image:alt" content="新NISAシミュレーターのトップ画面">
 
   <!-- ═══ テーマカラー・ファビコン ═══ -->
@@ -51,18 +51,18 @@
     "@graph": [
       {
         "@type": "WebSite",
-        "@id": "https://shakewakame.github.io/calculator-site/#website",
+        "@id": "https://guileless-beignet-331a2a.netlify.app/#website",
         "name": "新NISAシミュレーター",
         "alternateName": "FIRE・NISAシミュレーター",
-        "url": "https://shakewakame.github.io/calculator-site/",
+        "url": "https://guileless-beignet-331a2a.netlify.app/",
         "inLanguage": "ja",
-        "publisher": { "@id": "https://shakewakame.github.io/calculator-site/#publisher" }
+        "publisher": { "@id": "https://guileless-beignet-331a2a.netlify.app/#publisher" }
       },
       {
         "@type": "Organization",
-        "@id": "https://shakewakame.github.io/calculator-site/#publisher",
+        "@id": "https://guileless-beignet-331a2a.netlify.app/#publisher",
         "name": "shakewakame",
-        "url": "https://shakewakame.github.io/calculator-site/"
+        "url": "https://guileless-beignet-331a2a.netlify.app/"
       },
       {
         "@type": "BreadcrumbList",
@@ -71,7 +71,7 @@
             "@type": "ListItem",
             "position": 1,
             "name": "ホーム",
-            "item": "https://shakewakame.github.io/calculator-site/"
+            "item": "https://guileless-beignet-331a2a.netlify.app/"
           },
           {
             "@type": "ListItem",
@@ -84,7 +84,7 @@
         "@type": "WebApplication",
         "name": "新NISAシミュレーター",
         "description": "新NISAの積立投資・一括投資・資産取り崩しを無料でシミュレーションできるツール。複数シナリオの比較も可能。",
-        "url": "https://shakewakame.github.io/calculator-site/",
+        "url": "https://guileless-beignet-331a2a.netlify.app/",
         "applicationCategory": "FinanceApplication",
         "operatingSystem": "Web",
         "browserRequirements": "HTML5対応ブラウザ",
@@ -191,31 +191,42 @@
       min-height: 100vh;
       font-size: 15px;
     }
-    .wrap { max-width: 1220px; margin: 0 auto; padding: 22px 22px 70px; }
-    .hero {
-      display: flex; align-items: center; gap: 18px;
-      margin-bottom: 22px; padding-bottom: 18px;
-      border-bottom: 2px solid var(--border);
+    /* ── サイドナビ型レイアウト ── */
+    .wrap {
+      display: grid; grid-template-columns: 210px 1fr;
+      align-items: stretch;
+      max-width: 1480px; margin: 0 auto; padding: 0;
+      min-height: 100vh;
+    }
+    .sidebar {
+      position: sticky; top: 0; align-self: start;
+      height: 100vh; overflow-y: auto;
+      display: flex; flex-direction: column; gap: 16px;
+      padding: 18px 14px;
+      background: var(--surface); border-right: 1.5px solid var(--border);
     }
     .logo-icon {
-      width: 48px; height: 48px; border-radius: 14px;
+      width: 44px; height: 44px; border-radius: 13px;
       background: var(--accent); display: grid; place-items: center;
-      font-size: 24px; flex-shrink: 0;
+      font-size: 22px; flex-shrink: 0;
       box-shadow: 0 4px 14px rgba(29,78,216,.35);
     }
-    h1 { font-size: 22px; font-weight: 800; color: var(--text); letter-spacing: -0.02em; line-height: 1.2; }
-    .hero-sub { font-size: 14px; color: var(--muted); margin-top: 2px; }
-    .tab-bar {
-      display: flex; gap: 0; margin-bottom: 22px;
-      background: var(--surface); border: 1.5px solid var(--border);
-      border-radius: 14px; padding: 5px; width: fit-content;
-      box-shadow: var(--shadow-sm);
+    .crumb { margin-top: auto; font-size: 11px; color: var(--muted); line-height: 1.6; }
+    .crumb ol { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 5px; }
+    .crumb a { color: var(--accent); text-decoration: none; }
+    .main-area { min-width: 0; padding: 14px 22px 70px; }
+    .topbar {
+      display: flex; align-items: center; min-height: 40px;
+      margin-bottom: 14px; padding-bottom: 10px;
+      border-bottom: 2px solid var(--border);
     }
+    h1 { font-size: 15px; font-weight: 800; color: var(--text); letter-spacing: -0.02em; line-height: 1.3; }
+    .tab-bar { display: flex; flex-direction: column; gap: 4px; }
     .tab-btn {
-      background: none; border: none;
-      color: var(--muted); font-size: 14px; font-weight: 700;
-      padding: 10px 22px; cursor: pointer; border-radius: 10px;
-      transition: all .18s; white-space: nowrap; letter-spacing: -.01em;
+      background: none; border: none; text-align: left; width: 100%;
+      color: var(--muted); font-size: 13.5px; font-weight: 700;
+      padding: 11px 14px; cursor: pointer; border-radius: 10px;
+      transition: all .18s; white-space: normal; letter-spacing: -.01em;
     }
     .tab-btn:hover { color: var(--text); background: var(--bg); }
     .tab-btn.active { background: var(--accent); color: white; box-shadow: 0 2px 10px rgba(29,78,216,.35); }
@@ -374,15 +385,56 @@
     .scenario-stat .v { font-size:16px; font-weight:800; color:var(--text); word-break:break-all; }
 
     @media (max-width: 980px) {
+      /* サイドナビを上部の横並びバーへ折りたたむ（モバイル崩れ防止） */
+      .wrap { grid-template-columns: 1fr; min-height: 0; }
+      .sidebar {
+        position: static; height: auto; overflow: visible;
+        flex-direction: row; flex-wrap: wrap; align-items: center;
+        gap: 10px; padding: 10px 14px;
+        border-right: none; border-bottom: 1.5px solid var(--border);
+      }
+      .tab-bar { flex-direction: row; flex-wrap: wrap; gap: 4px; }
+      .tab-btn { width: auto; text-align: center; padding: 8px 14px; }
+      .crumb { margin-top: 0; order: 3; width: 100%; }
+      .main-area { padding: 14px; }
       .grid { grid-template-columns: 1fr; }
       .stats { grid-template-columns: repeat(2,1fr); }
       #nisa-grid { grid-template-columns: 1fr !important; }
-      /* panel is already static */
     }
     @media (max-width: 640px) {
       .stats { grid-template-columns: 1fr 1fr; }
-      .wrap { padding-inline: 14px; }
-      .tab-btn { font-size: 13px; padding: 9px 14px; }
+      .main-area { padding: 12px; }
+      .tab-btn { font-size: 13px; padding: 8px 12px; }
+    }
+
+    /* ── 大画面：ファーストビューに「条件入力＋結果数値＋グラフ」を同時表示 ──
+       980px以下は従来の縦並びを維持（モバイル崩れ防止） */
+    @media (min-width: 1280px) {
+      /* A) 右カラム並べ替え（DOM・IDは不変／CSS orderのみ）：
+         結果数値 → グラフ → 税メリット → インフレ → 年次テーブル */
+      .right { gap: 14px; }
+      .right > .stats-wrap { order: 1; }
+      .right > .chart-card { order: 2; }
+      .right > .tax-card   { order: 3; }
+      .right > .inf-note   { order: 4; }
+      .right > .table-card { order: 5; }
+
+      /* B) グラフカード周辺の縦クローム圧縮（viewBox・描画ロジックは不変） */
+      .chart-card    { padding: 12px 14px; }
+      .chart-sub     { margin-bottom: 8px; }
+      .legend        { margin-top: 8px; }
+      .stat          { padding: 9px 14px; }
+      .stat .v       { font-size: clamp(15px, 1.5vw, 21px); }
+      .result-header { padding: 9px 16px 8px; }
+
+      /* C) 左パネル（条件入力）の縦圧縮 */
+      .panel             { padding: 13px; }
+      .form-grid         { gap: 10px; }
+      .panel-title       { margin-bottom: 9px; padding-bottom: 8px; }
+      label              { gap: 5px; }
+      .input-slider-wrap { gap: 6px; }
+      .row-2             { gap: 10px; }
+      .divider           { margin: 1px 0; }
     }
 
     /* ── シナリオ比較 (Tab 1-3) ── */
@@ -475,29 +527,27 @@
 </noscript>
 
 <div class="wrap">
-  <nav aria-label="パンくずリスト" style="font-size:12px;color:#6b7280;margin-bottom:10px;">
-    <ol style="list-style:none;padding:0;margin:0;display:flex;gap:6px;flex-wrap:wrap;">
-      <li><a href="https://shakewakame.github.io/calculator-site/" style="color:#1d4ed8;text-decoration:none;">ホーム</a></li>
-      <li aria-hidden="true">›</li>
-      <li aria-current="page">新NISAシミュレーター</li>
-    </ol>
-  </nav>
-
-  <header class="hero">
+  <aside class="sidebar">
     <div class="logo-icon" role="img" aria-label="成長グラフのアイコン">📈</div>
-    <div>
-      <h1>新NISAシミュレーター｜FIRE・積立・一括・取り崩しを無料で試算</h1>
-      <p class="hero-sub">積立投資・一括投資・資産取り崩し・新NISAの4つのシミュレーションを提供します。月額・年利・運用年数を自由に設定し、将来の予想評価額を見える化できます。</p>
-    </div>
-  </header>
-
-  <div class="tab-bar">
-    <button class="tab-btn active" data-tab="tab1">積立投資</button>
-    <button class="tab-btn" data-tab="tab2">一括投資</button>
-    <button class="tab-btn" data-tab="tab3">資産取り崩し</button>
-    <button class="tab-btn" data-tab="tab4">新NISAシミュレーター</button>
-    <button class="tab-btn" data-tab="tab5">FIRE逆算</button>
-  </div>
+    <nav class="tab-bar" aria-label="シミュレーター切替">
+      <button class="tab-btn active" data-tab="tab1">積立投資</button>
+      <button class="tab-btn" data-tab="tab2">一括投資</button>
+      <button class="tab-btn" data-tab="tab3">資産取り崩し</button>
+      <button class="tab-btn" data-tab="tab4">新NISAシミュレーター</button>
+      <button class="tab-btn" data-tab="tab5">FIRE逆算</button>
+    </nav>
+    <nav class="crumb" aria-label="パンくずリスト">
+      <ol>
+        <li><a href="https://guileless-beignet-331a2a.netlify.app/">ホーム</a></li>
+        <li aria-hidden="true">›</li>
+        <li aria-current="page">新NISAシミュレーター</li>
+      </ol>
+    </nav>
+  </aside>
+  <main class="main-area">
+    <header class="topbar">
+      <h1>新NISAシミュレーター｜FIRE・積立・一括・取り崩し 無料試算</h1>
+    </header>
 
   <!-- ═══════ TAB 1: 積立 ═══════ -->
   <div id="tab1" class="tab-panel active">
@@ -572,10 +622,6 @@
               <input type="checkbox" id="t1-auto">自動で再計算
             </label>
           </div>
-        </div>
-        <div class="note">
-          ・税金・手数料・価格変動・為替は考慮していません。<br>
-          ・年利は月利へ変換して複利計算しています。
         </div>
       </section>
 
@@ -685,10 +731,6 @@
               <input type="checkbox" id="t2-auto">自動で再計算
             </label>
           </div>
-        </div>
-        <div class="note">
-          ・税金・手数料・価格変動・為替は考慮していません。<br>
-          ・年複利で計算しています。
         </div>
       </section>
 
@@ -819,10 +861,6 @@
               <input type="checkbox" id="t3-auto">自動で再計算
             </label>
           </div>
-        </div>
-        <div class="note">
-          <strong>4%ルールとは</strong><br>
-          年4%取り崩しでも30年以上資産が持続する可能性が高いという経験則（トリニティ・スタディに基づく）。税金・手数料は考慮していません。
         </div>
       </section>
 
@@ -967,15 +1005,6 @@
 
           </div><!-- /form-grid -->
 
-          <div class="note" style="margin-top:12px;">
-            <strong>新NISAのルール</strong><br>
-            ・生涯投資枠：1,800万円<br>
-            ・年間投資上限：360万円（成長投資枠<strong>一括240万</strong>＋積立枠120万）<br>
-            ・一括投資の年間上限：240万円<br>
-            ・積立投資の年間上限：120万円（月10万円）<br>
-            ・非課税期間：無期限<br>
-            ・税金は考慮していません
-          </div>
         </section>
 
       </div><!-- /left -->
@@ -1098,11 +1127,6 @@
             <button class="btn-share" type="button" id="f5-share">🔗 URLをシェア</button>
           </div>
         </div>
-        <div class="note">
-          <strong>4%ルールに基づく計算</strong><br>
-          FIRE必要資産 ＝ 年間生活費 × 25倍。月次複利で資産が目標額に達した月を検出します。<br>
-          税金・手数料・インフレは考慮していません。
-        </div>
       </section>
       <section class="right" id="f5-result-area">
         <div style="text-align:center;color:var(--muted);padding:60px 20px 40px;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);">
@@ -1113,6 +1137,7 @@
       </section>
     </main>
   </div><!-- /tab5 -->
+  </main>
 
 </div>
 
